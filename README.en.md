@@ -8,6 +8,14 @@ Documents normally have separate Chinese, English, and Japanese editions, with r
 
 These are personal study materials, not official solutions from a course or institution. Check the assumptions, scope, and revision version stated in each document.
 
+## How the PDFs are produced
+
+The study documents follow this workflow: handwritten derivations supplied by the author → AI-assisted preparation of electronic manuscripts → LaTeX compilation into PDFs. The author provides handwritten ideas, calculations, and derivations. AI assists with recognition and transcription, organization, translation, and LaTeX typesetting. The original derivations and subsequent editorial work are distinguished.
+
+Recognition, translation, notation, and typesetting may contain errors. Verification status is stated for each document; this description does not imply that every document has been checked line by line by the author. Readers are welcome to compare the accompanying manuscript photographs and report issues. Documents using other source formats will identify them separately.
+
+The [200_github_open_learning_pdf skill](skills/200_github_open_learning_pdf/SKILL.md) and its [LaTeX template](skills/200_github_open_learning_pdf/assets/open_learning_template.tex) are included so that readers can inspect and reuse the preparation rules. Manuscript photographs are checked for permission to publish and personal information; privacy-edited public copies are provided when needed. All three language editions share one set of manuscript images.
+
 ## Contents
 
 The repository is being initialized and does not yet contain study documents. The table below will be updated with file links as materials are added.

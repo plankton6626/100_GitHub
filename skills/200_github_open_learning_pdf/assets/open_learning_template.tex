@@ -1,0 +1,168 @@
+% Compile: xelatex -interaction=nonstopmode -halt-on-error FILE.tex (run twice).
+% Dependencies: xeCJK, amsmath, amssymb, indentfirst, xcolor, tcolorbox, tikz, hyperref.
+% Japanese fonts: Noto Serif/Sans CJK JP preferred; MS Mincho/Gothic fallback.
+% Set Chinese: \chinesetrue; English: \englishtrue; Japanese: both false.
+% Render separate _zh, _en and _ja files with identical semantic labels.
+% Chinese fonts: SimSun/SimHei or Noto CJK SC. English uses Latin fonts only.
+% Small bibliographies: thebibliography + bibitem + cite; run XeLaTeX twice.
+\documentclass[a4paper,12pt]{article}
+\usepackage{xeCJK}
+\newif\ifchinese
+\chinesefalse
+\newif\ifenglish
+\englishfalse
+
+\ifchinese
+  \IfFontExistsTF{SimSun}{
+    \setCJKmainfont{SimSun}[AutoFakeBold=2]
+  }{\setCJKmainfont{Noto Serif CJK SC}[AutoFakeBold=2]}
+  \IfFontExistsTF{SimHei}{
+    \setCJKsansfont{SimHei}[AutoFakeBold=1.5]
+  }{\setCJKsansfont{Noto Sans CJK SC}[AutoFakeBold=2]}
+\else
+  \ifenglish
+  \else
+  \IfFontExistsTF{Noto Serif CJK JP}{
+    \setCJKmainfont{Noto Serif CJK JP}[AutoFakeBold=2]
+  }{
+    \IfFontExistsTF{MS Mincho}{
+      \setCJKmainfont{MS Mincho}[AutoFakeBold=2]
+    }{\setCJKmainfont{Noto Serif CJK JP}[AutoFakeBold=2]}
+  }
+  \IfFontExistsTF{Noto Sans CJK JP}{
+    \setCJKsansfont{Noto Sans CJK JP}[AutoFakeBold=1.5]
+  }{
+    \IfFontExistsTF{MS Gothic}{
+      \setCJKsansfont{MS Gothic}[AutoFakeBold=1.5]
+    }{\setCJKsansfont{Noto Sans CJK JP}[AutoFakeBold=2]}
+  }
+\fi
+\fi
+
+\usepackage{amsmath,amssymb}
+\usepackage{indentfirst}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\definecolor{Lime}{HTML}{FFEA00}
+\definecolor{Spring}{HTML}{BFEF40}
+\definecolor{Mint}{HTML}{80F580}
+\definecolor{Aqua}{HTML}{40FABF}
+\definecolor{Cyan}{HTML}{00FFFF}
+\colorlet{Ink}{Mint!20!black}
+\colorlet{SubInk}{Aqua!23!black}
+\colorlet{MutedInk}{Cyan!22!black}
+
+\setlength{\textwidth}{\dimexpr\paperwidth-50mm\relax}
+\setlength{\textheight}{\dimexpr\paperheight-50mm\relax}
+\setlength{\oddsidemargin}{\dimexpr25mm-1in\relax}
+\setlength{\evensidemargin}{\oddsidemargin}
+\setlength{\topmargin}{\dimexpr25mm-1in\relax}
+\setlength{\headheight}{0pt}
+\setlength{\headsep}{0pt}
+\setlength{\footskip}{12mm}
+\setlength{\parindent}{1em}
+\setlength{\parskip}{2pt}
+\linespread{1.06}
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{\z@}
+  {-1.1em \@plus -0.2em \@minus -0.1em}{0.45em}
+  {\normalfont\sffamily\normalsize\bfseries\color{Ink}}}
+\renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}
+  {-0.9em \@plus -0.2em \@minus -0.1em}{0.35em}
+  {\normalfont\sffamily\normalsize\bfseries\color{SubInk}}}
+\def\ps@study{%
+  \def\@oddhead{}\def\@evenhead{}%
+  \def\@oddfoot{\hfil{\sffamily\small\color{MutedInk}\thepage}\hfil}%
+  \let\@evenfoot\@oddfoot}
+\makeatother
+\pagestyle{study}
+
+\newcommand{\compactmath}{%
+  \setlength{\abovedisplayskip}{3pt plus 1pt minus 1pt}%
+  \setlength{\belowdisplayskip}{3pt plus 1pt minus 1pt}%
+  \setlength{\abovedisplayshortskip}{2pt plus 1pt}%
+  \setlength{\belowdisplayshortskip}{2pt plus 1pt}%
+  \setlength{\jot}{2pt}}
+\AtBeginDocument{\compactmath\setlength{\parindent}{1em}}
+\newsavebox{\displaymeasure}
+% Optional: keep ordinary formulas in one line when they fit the current width.
+\newcommand{\fitmath}[2]{%
+  \compactmath
+  \sbox{\displaymeasure}{$\displaystyle #1$}%
+  \ifdim\wd\displaymeasure>\linewidth
+    \[\begin{gathered}#2\end{gathered}\]%
+  \else
+    \[#1\]%
+  \fi
+  \par}
+
+\tcbset{studybox/.style={
+  sharp corners,boxrule=0.7pt,leftrule=1.4pt,
+  left=2.5mm,right=2.5mm,top=1.5mm,bottom=1.5mm,
+  before skip=8pt,after skip=8pt,
+  fonttitle=\sffamily\bfseries\small,coltitle=Ink,
+  fontupper=\normalsize,colupper=black,
+  before upper={\compactmath\setlength{\parindent}{1em}}
+}}
+\newtcolorbox{definitionBox}[1]{studybox,
+  colback=Mint!8!white,colframe=Spring!35!black,
+  colbacktitle=Mint!28!white,title={#1}}
+\newtcolorbox{resultBox}[1]{studybox,
+  colback=Aqua!9!white,colframe=Lime!38!black,
+  colbacktitle=Aqua!32!white,title={#1}}
+\newtcolorbox{explanationBox}[1]{studybox,
+  colback=Cyan!8!white,colframe=Aqua!35!black,
+  colbacktitle=Cyan!24!white,title={#1}}
+
+
+\usepackage{tikz}
+\IfFileExists{kvsetkeys.sty}{\usepackage{hyperref}}{%
+  \newcommand{\hypersetup}[1]{}}
+\hypersetup{unicode=true,colorlinks=true,linkcolor=Ink,urlcolor=SubInk,
+  pdfauthor={},pdfsubject={Independent study notes},pdfcreator={XeLaTeX}}
+\setcounter{tocdepth}{1}
+\ifchinese
+  \renewcommand{\contentsname}{目录}
+  \renewcommand{\refname}{参考文献}
+  \newcommand{\notetitle}{学习笔记}
+  \newcommand{\notemetadata}{版本：0.1\quad 日期：YYYY-MM-DD\quad 许可：CC BY 4.0}
+  \newcommand{\licensetext}{除另有说明的第三方材料外，原创内容采用 CC BY 4.0。再利用须适当署名、提供许可链接并说明修改。公开署名暂留白。}
+\else\ifenglish
+  \renewcommand{\contentsname}{Contents}
+  \renewcommand{\refname}{References}
+  \newcommand{\notetitle}{Study Notes}
+  \newcommand{\notemetadata}{Version: 0.1\quad Date: YYYY-MM-DD\quad License: CC BY 4.0}
+  \newcommand{\licensetext}{Except for separately identified third-party material, original content is licensed under CC BY 4.0. Reuse requires appropriate attribution, a license link and an indication of changes. The public author name is currently unspecified.}
+\else
+  \renewcommand{\contentsname}{目次}
+  \renewcommand{\refname}{参考文献}
+  \newcommand{\notetitle}{学習ノート}
+  \newcommand{\notemetadata}{版：0.1\quad 日付：YYYY-MM-DD\quad ライセンス：CC BY 4.0}
+  \newcommand{\licensetext}{別途示す第三者の資料を除き、オリジナルの内容は CC BY 4.0 で提供する。再利用時は適切な帰属表示、ライセンスへのリンク、変更の明示が必要である。公開著者名は現在未指定である。}
+\fi\fi
+\newcommand{\publicauthor}{}
+\newcommand{\licenseurl}{https://creativecommons.org/licenses/by/4.0/}
+\newcommand{\spectrum}{%
+  \begin{tikzpicture}
+  \shade[left color=Lime,right color=Spring] (0,0) rectangle (4,0.10);
+  \shade[left color=Spring,right color=Mint] (4,0) rectangle (8,0.10);
+  \shade[left color=Mint,right color=Aqua] (8,0) rectangle (12,0.10);
+  \shade[left color=Aqua,right color=Cyan] (12,0) rectangle (16,0.10);
+  \end{tikzpicture}}
+
+\begin{document}
+% Replace the title and metadata with the intended public information.
+% Leave the public author blank unless the user supplies one; no student ID.
+{\Large\sffamily\bfseries\color{Ink} \notetitle}
+\par\smallskip
+{\small \notemetadata}
+\par\smallskip\noindent\spectrum
+% Insert a short abstract, prerequisites and only the sections needed.
+% Use numbered sections with semantic labels, and selective equation labels.
+% Include provenance, third-party exceptions and a real feedback link if known.
+% Use \cite{stable-key} where a real reference supports the text.
+% Add thebibliography and bibitem entries only when genuine references exist.
+% Never invent author names, publication titles, DOI values or page numbers.
+\par\smallskip
+{\small\licensetext\par\texttt{\licenseurl}}
+\end{document}
