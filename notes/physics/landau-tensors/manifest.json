@@ -58,18 +58,18 @@
     },
     {
       "path": "pdf/landau_tensors_en.pdf",
-      "bytes": 114620,
-      "sha256": "98d88bdfd9d2af93fb126102389d832c6bdc20febcd8cbb2841960b6324569e4"
+      "bytes": 114539,
+      "sha256": "33e60ef0e1e20f4d20f3c8bc51dacd567c7202a257c5883510fc63597ddd86d4"
     },
     {
       "path": "pdf/landau_tensors_ja.pdf",
-      "bytes": 358877,
-      "sha256": "a8f42c2125958023ceda420d9ced90a35c32c51223c3d1c9884b1536e65cf45b"
+      "bytes": 357960,
+      "sha256": "8dc6b0605a12c95677994f14e937f5d2a19abc57feb7468265a819641ed661b5"
     },
     {
       "path": "pdf/landau_tensors_zh.pdf",
-      "bytes": 226520,
-      "sha256": "f0ab0c670a56ed6d08b6751ad34055be7ad5b54118dabcce98471dfcc7eebc7b"
+      "bytes": 225919,
+      "sha256": "2940e2407b05ee2d68c9d9b5b73e38ff11aeadd5d24213c6e32b073ec46810e2"
     },
     {
       "path": "README.en.md",
@@ -98,18 +98,18 @@
     },
     {
       "path": "tex/landau_tensors_en.tex",
-      "bytes": 43529,
-      "sha256": "a0eccccb96935c6d56c1b87d2cb21c15e839a61a2dbaee31514a684353aba87c"
+      "bytes": 43460,
+      "sha256": "63b89ea1fdad2d48da8f8390de0022eaade98b41b7b65350f9dcf0449947c585"
     },
     {
       "path": "tex/landau_tensors_ja.tex",
-      "bytes": 44532,
-      "sha256": "157e0c67fe68b2c2f33164045174c92c18c76cba1610b0a027094deff2c5d584"
+      "bytes": 44463,
+      "sha256": "c949b3d45b33bb2c062f31c32713d76c7349eb4736484c5161d4f103e54d1c9d"
     },
     {
       "path": "tex/landau_tensors_zh.tex",
-      "bytes": 39791,
-      "sha256": "547dcb3f71782de93ffd69529ef3a70b41de244fc19d1c3bd000e8f73124546e"
+      "bytes": 39746,
+      "sha256": "866bb0832bbfa12a1cb0504129299731f5f7b5260dc5b9513cca076158cc0bf2"
     }
   ]
 }
