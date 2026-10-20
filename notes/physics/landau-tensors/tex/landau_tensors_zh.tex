@@ -1,0 +1,561 @@
+% Compile: xelatex -interaction=nonstopmode -halt-on-error FILE.tex (run twice).
+% Dependencies: xeCJK, amsmath, amssymb, indentfirst, xcolor, tcolorbox, tikz, hyperref.
+% Japanese fonts: Yu Mincho / Yu Gothic; replace with open CJK fonts when needed.
+% Set Chinese: \chinesetrue; English: \englishtrue; Japanese: both false.
+% Render separate _zh, _en and _ja files with identical semantic labels.
+% Chinese fonts: SimSun/SimHei or Noto CJK SC. English uses Latin fonts only.
+% Small bibliographies: thebibliography + bibitem + cite; run XeLaTeX twice.
+\documentclass[a4paper,12pt]{article}
+\usepackage{xeCJK}
+\setCJKmainfont{SimSun}[AutoFakeBold=2]
+\setCJKsansfont{SimHei}[AutoFakeBold=2]
+\setCJKmonofont{SimSun}
+
+\newif\ifchinese
+\chinesetrue
+\newif\ifenglish
+\englishfalse
+\usepackage{amsmath,amssymb}
+\usepackage{indentfirst}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\definecolor{Lime}{HTML}{FFEA00}
+\definecolor{Spring}{HTML}{BFEF40}
+\definecolor{Mint}{HTML}{80F580}
+\definecolor{Aqua}{HTML}{40FABF}
+\definecolor{Cyan}{HTML}{00FFFF}
+\colorlet{Ink}{Mint!20!black}
+\colorlet{SubInk}{Aqua!23!black}
+\colorlet{MutedInk}{Cyan!22!black}
+
+\setlength{\textwidth}{\dimexpr\paperwidth-50mm\relax}
+\setlength{\textheight}{\dimexpr\paperheight-50mm\relax}
+\setlength{\oddsidemargin}{\dimexpr25mm-1in\relax}
+\setlength{\evensidemargin}{\oddsidemargin}
+\setlength{\topmargin}{\dimexpr25mm-1in\relax}
+\setlength{\headheight}{0pt}
+\setlength{\headsep}{0pt}
+\setlength{\footskip}{12mm}
+\setlength{\parindent}{1em}
+\setlength{\parskip}{2pt}
+\linespread{1.06}
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{\z@}
+  {-1.1em \@plus -0.2em \@minus -0.1em}{0.45em}
+  {\normalfont\sffamily\normalsize\bfseries\color{Ink}}}
+\renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}
+  {-0.9em \@plus -0.2em \@minus -0.1em}{0.35em}
+  {\normalfont\sffamily\normalsize\bfseries\color{SubInk}}}
+\def\ps@study{%
+  \def\@oddhead{}\def\@evenhead{}%
+  \def\@oddfoot{\hfil{\sffamily\small\color{MutedInk}\thepage}\hfil}%
+  \let\@evenfoot\@oddfoot}
+\makeatother
+\pagestyle{study}
+
+\newcommand{\compactmath}{%
+  \setlength{\abovedisplayskip}{3pt plus 1pt minus 1pt}%
+  \setlength{\belowdisplayskip}{3pt plus 1pt minus 1pt}%
+  \setlength{\abovedisplayshortskip}{2pt plus 1pt}%
+  \setlength{\belowdisplayshortskip}{2pt plus 1pt}%
+  \setlength{\jot}{2pt}}
+\AtBeginDocument{\compactmath\setlength{\parindent}{1em}}
+\newsavebox{\displaymeasure}
+% Optional: keep ordinary formulas in one line when they fit the current width.
+\newcommand{\fitmath}[2]{%
+  \compactmath
+  \sbox{\displaymeasure}{$\displaystyle #1$}%
+  \ifdim\wd\displaymeasure>\linewidth
+    \[\begin{gathered}#2\end{gathered}\]%
+  \else
+    \[#1\]%
+  \fi
+  \par}
+
+\tcbset{studybox/.style={
+  sharp corners,boxrule=0.7pt,leftrule=1.4pt,
+  left=2.5mm,right=2.5mm,top=1.5mm,bottom=1.5mm,
+  before skip=8pt,after skip=8pt,
+  fonttitle=\sffamily\bfseries\small,coltitle=Ink,
+  fontupper=\normalsize,colupper=black,
+  before upper={\compactmath\setlength{\parindent}{1em}}
+}}
+\newtcolorbox{definitionBox}[1]{studybox,
+  colback=Lime!10!white,colframe=Lime!42!black,coltitle=Lime!30!black,
+  colbacktitle=Lime!28!white,title={#1}}
+\newtcolorbox{resultBox}[1]{studybox,
+  colback=Cyan!8!white,colframe=Cyan!38!black,coltitle=Cyan!25!black,
+  colbacktitle=Cyan!28!white,title={#1}}
+\newtcolorbox{explanationBox}[1]{studybox,
+  colback=Cyan!8!white,colframe=Aqua!35!black,
+  colbacktitle=Cyan!24!white,title={#1}}
+
+
+\usepackage{tikz}
+\IfFileExists{kvsetkeys.sty}{\usepackage{hyperref}}{%
+  \newcommand{\hypersetup}[1]{}}
+\hypersetup{unicode=true,colorlinks=true,linkcolor=Ink,urlcolor=SubInk,
+  pdfauthor={},pdfsubject={Independent study notes},pdfcreator={XeLaTeX}}
+\setcounter{tocdepth}{1}
+\ifchinese
+  \renewcommand{\contentsname}{目录}
+  \renewcommand{\refname}{参考文献}
+  \newcommand{\notetitle}{学习笔记}
+  \newcommand{\notemetadata}{版本：0.7\quad 日期：2026-10-20\quad 许可：CC BY 4.0}
+  \newcommand{\licensetext}{除另有说明的第三方材料外，原创内容采用 CC BY 4.0。再利用须适当署名、提供许可链接并说明修改。公开署名暂留白。}
+\else\ifenglish
+  \renewcommand{\contentsname}{Contents}
+  \renewcommand{\refname}{References}
+  \newcommand{\notetitle}{Study Notes}
+  \newcommand{\notemetadata}{Version: 0.7\quad Date: 2026-10-20\quad License: CC BY 4.0}
+  \newcommand{\licensetext}{Except for separately identified third-party material, original content is licensed under CC BY 4.0. Reuse requires appropriate attribution, a license link and an indication of changes. The public author name is currently unspecified.}
+\else
+  \renewcommand{\contentsname}{目次}
+  \renewcommand{\refname}{参考文献}
+  \newcommand{\notetitle}{学習ノート}
+  \newcommand{\notemetadata}{版：0.7\quad 日付：2026-10-20\quad ライセンス：CC BY 4.0}
+  \newcommand{\licensetext}{別途示す第三者の資料を除き、オリジナルの内容は CC BY 4.0 で提供する。再利用時は適切な帰属表示、ライセンスへのリンク、変更の明示が必要である。公開著者名は現在未指定である。}
+\fi\fi
+\newcommand{\publicauthor}{}
+\newcommand{\licenseurl}{https://creativecommons.org/licenses/by/4.0/}
+\newcommand{\spectrum}{%
+  \begin{tikzpicture}
+  \shade[left color=Lime,right color=Spring] (0,0) rectangle (4,0.10);
+  \shade[left color=Spring,right color=Mint] (4,0) rectangle (8,0.10);
+  \shade[left color=Mint,right color=Aqua] (8,0) rectangle (12,0.10);
+  \shade[left color=Aqua,right color=Cyan] (12,0) rectangle (16,0.10);
+  \end{tikzpicture}}
+
+\usepackage{textcomp}
+\emergencystretch=2em
+\raggedbottom
+\newdimen\remainingpage
+\newcommand{\keepheading}{\par\begingroup\dimen0=150pt\vskip0pt plus\dimen0\penalty-100\vskip0pt plus-\dimen0\vskip\dimen0\penalty9999\vskip-\dimen0\vskip0pt\endgroup}
+\clubpenalty=10000\widowpenalty=10000
+\begin{document}
+{\Large\sffamily\bfseries\color{Ink} 四维张量、对偶与微积分}
+\par\smallskip{\small\notemetadata}\par\smallskip\noindent\spectrum\par\smallskip
+作者提供手写推导及文字说明，AI 协助转录、整理、翻译与 LaTeX 排版。本版为待作者检查的本地阅读稿。
+\tableofcontents\clearpage
+\keepheading\section{张量的基本定义}
+
+张量提供了一种把物理关系写成与坐标选择相容的形式的方法：更换坐标时，各个分量可以改变，但它们必须遵循确定的变换规律。讨论将从这一规律出发，依次建立度规、缩并和对偶运算，再将它们用于积分与粒子运动。相关约定参照《场论》第一章第6、7节\cite{landau-fields}。四维指标 $i,j,k,l$ 取 $0,1,2,3$，三维指标 $\alpha,\beta,\gamma$ 取 $1,2,3$；一上一下的重复指标求和。
+
+考虑可逆线性坐标变换 $x^{\prime i}=\Lambda^i{}_j x^j$。用 $r$ 个上指标和 $s$ 个下指标标记一组量：每个上指标都对应变换矩阵 $\Lambda$，每个下指标都对应逆矩阵 $\Lambda^{-1}$。按这两种规则变换的指标分别称为\textbf{逆变指标}和\textbf{协变指标}；这些名称用来区分两种变换方式。若该组量满足下列整体变换律，就称它为 $(r,s)$ 型混合张量，总阶数为 $r+s$。上下指标的相对顺序应保持一致。
+
+\begin{definitionBox}{混合型张量的定义}
+\begin{equation}\label{tensor-law}
+\begin{aligned}
+(A')^{i_1\cdots i_r}{}_{j_1\cdots j_s}
+={}&\Lambda^{i_1}{}_{a_1}\cdots\Lambda^{i_r}{}_{a_r}\\
+&\mathrel{}\times(\Lambda^{-1})^{b_1}{}_{j_1}\cdots(\Lambda^{-1})^{b_s}{}_{j_s}
+A^{a_1\cdots a_r}{}_{b_1\cdots b_s}.
+\end{aligned}
+\end{equation}
+\end{definitionBox}
+
+右边的 $a_1,\ldots,a_r,b_1,\ldots,b_s$ 都是求和用的哑指标，左边的 $i_1,\ldots,j_s$ 则标记变换后的具体分量。逆矩阵出现在下指标处，是为了使一个上、下指标配对时，变换矩阵互相抵消；这正是后面构造内积和缩并所需要的性质。因此，张量的关键不是“有多少个数”，而是这些数是否共同满足规定的变换规律。
+
+$s=0$ 时为纯逆变张量，$r=0$ 时为纯协变张量；$r=s=0$ 时为标量，$(1,0)$ 型为逆变矢量，$(0,1)$ 型为协变矢量。
+
+狭义相对论中，惯性系之间采用洛伦兹变换。沿 $x$ 方向的一个约定为下式，其中快度 $\eta$ 满足 $\tanh\eta=v/c$。这对应 $x'=\gamma(x-vt)$；反向变换的非对角元变为正号。
+
+\begin{equation}\label{boost}
+\Lambda=\begin{pmatrix}\cosh\eta&-\sinh\eta&0&0\\-\sinh\eta&\cosh\eta&0&0\\0&0&1&0\\0&0&0&1\end{pmatrix},\qquad \tanh\eta=\frac vc.
+\end{equation}
+
+这个矩阵只混合时间分量与沿运动方向的空间分量，横向的 $y,z$ 分量保持不变。快度把矩阵元素写成双曲函数，使保持间隔的条件与 $\cosh^2\eta-\sinh^2\eta=1$ 直接联系起来。后面用同一组双曲函数表示四速度时，这种结构还会再次出现。
+
+\keepheading\section{闵氏度规的引入与相关计算}
+
+在狭义相对论中，事件间隔先由物理讨论建立，而不是从预先假定的度规出发。《场论》根据相对性原理与光速不变性讨论事件之间的关系，得到在不同惯性系中保持不变的间隔 $ds^2=c^2dt^2-dx^2-dy^2-dz^2$。以 $x^i=(ct,x,y,z)$ 统一时间与空间坐标的量纲后，观察这个已知二次式的系数，就可以识别出闵可夫斯基度规 $g_{ij}$，并将间隔改写为张量记号：
+
+\begin{definitionBox}{由事件间隔识别度规}
+\begin{equation}\label{metric}
+\begin{gathered}ds^2=c^2dt^2-dx^2-dy^2-dz^2=g_{ij}\,dx^i dx^j,\\(g_{ij})=\operatorname{diag}(1,-1,-1,-1).\end{gathered}
+\end{equation}
+\end{definitionBox}
+度规可用来缩并张量和构造矢量内积：
+
+\begin{equation}\label{trace}
+g_{ij}A^{ij}=A^i{}_i=A^0{}_0+A^1{}_1+A^2{}_2+A^3{}_3.
+\end{equation}
+
+这里先用 $g_{ij}$ 将 $A^{ij}$ 的一个指标降下，再令上下指标相同并求和，结果没有自由指标，因此是标量。若直接用全上标分量展开，便是 $A^{00}-A^{11}-A^{22}-A^{33}$；写成混合分量的对角和时，这些负号已经包含在降指标的过程里。
+
+\begin{equation}\label{inner}
+\begin{gathered}g_{ij}X^iY^j=X^iY_i,\\X^iY_i=X^0Y^0-X^1Y^1-X^2Y^2-X^3Y^3.\end{gathered}
+\end{equation}
+\keepheading\textbf{逆度规的定义。} 将协变度规的矩阵记为 $G=(g_{ij})$，逆度规的分量 $g^{ij}$ 定义为逆矩阵 $G^{-1}$ 的元素。本稿中 $G=\operatorname{diag}(1,-1,-1,-1)$，故 $G^2=I$，从而 $G^{-1}=G$；数值相同是此正交坐标与符号约定的结果，并不取消上下指标的区别。度规降低指标，逆度规升高指标：
+
+\begin{definitionBox}{逆度规与指标升降}
+\begin{equation}\label{raise-lower}
+\begin{gathered}
+(g^{ij})=G^{-1}=\operatorname{diag}(1,-1,-1,-1),\\
+g^{ik}g_{kj}=\delta^i{}_j,\qquad g_{ik}g^{kj}=\delta_i{}^j,\\
+A_i=g_{ij}A^j,\qquad A^i=g^{ij}A_j.
+\end{gathered}
+\end{equation}
+\end{definitionBox}
+
+升降指标并没有产生新的物理对象，而是改变同一对象的分量表示。在当前度规下，时间分量不变，三个空间分量都变号。每升降一个空间指标就引入一个负号，所以二阶张量的两个空间指标同时升降时，两个负号相消；时间—空间混合分量则只变号一次。
+
+闵氏度规不是正定的。非零矢量依 $A^iA_i$ 为正、负或零，分别称为类时、类空或类光矢量。这也是相对论中区分事件间因果关系的几何基础。
+
+\keepheading\section{$\delta$ 与 $\varepsilon$ 的讨论}
+
+\subsection{真张量与赝张量}
+
+度规与指标升降使我们能够比较不同类型的分量。接下来考察两个特殊对象：单位张量 $\delta^i{}_j$ 与完全反对称符号 $\varepsilon^{ijkl}$。它们在所用坐标中都有简单的数值表，但“分量数值固定”并不自动保证它们具有相同的变换性质。为分清这一点，先在闵氏时空的正交惯性坐标系之间给出定义，再用反射作检验。
+
+\begin{definitionBox}{单位张量与完全反对称符号}
+\begin{equation}\label{symbols}
+\delta^i{}_j=\begin{cases}1&i=j,\\0&i\ne j,\end{cases}\qquad \varepsilon^{0123}=1,\qquad \varepsilon_{0123}=-1.
+\end{equation}
+\end{definitionBox}
+
+$\delta^i{}_j$ 的作用是把输入矢量的每个分量原样取出，所以它可以看成恒等变换的分量。$\varepsilon$ 则同时记录指标是否互异以及排列的方向：两个指标相同会使交换它们既不改变分量又要求变号，因此该分量必须为零；其余分量的符号由交换次数的奇偶决定。
+
+$\varepsilon^{ijkl}$ 在 $0123$ 的偶排列时为 $+1$，奇排列时为 $-1$，有重复指标时为零。下标分量由度规降低四个指标得到。
+
+考察反射 $T=\operatorname{diag}(-1,1,1,1)$，有 $T^{-1}=T$。单位张量仍满足其定义：
+
+\begin{equation}\label{delta-transform}
+(\delta')^i{}_j=T^i{}_k(T^{-1})^l{}_j\delta^k{}_l=\delta^i{}_j.
+\end{equation}
+
+反射在这里是区分真、赝性质的一次检验，而不是对张量定义的替代。$\delta$ 在一个上指标和一个下指标处的变换因子互为逆矩阵，故抵消之后仍是同一单位矩阵；这一抵消实际上对任意可逆线性变换都成立。
+
+若将 $\varepsilon$ 按普通四阶逆变张量变换，则 $0123$ 分量变为 $-1$。为了在反射后的坐标系中仍保持原数值约定，需要加入符号修正。
+
+\begin{equation}\label{epsilon-transform}
+(\varepsilon')^{ijkl}=\operatorname{sgn}(\det\Lambda)\,\Lambda^i{}_a\Lambda^j{}_b\Lambda^k{}_c\Lambda^l{}_d\varepsilon^{abcd}.
+\end{equation}
+
+可以把额外的 $\operatorname{sgn}(\det\Lambda)$ 理解为对坐标定向改变的补偿。保定向变换的行列式为 $+1$，没有额外负号；反定向变换的行列式为 $-1$，则多一个负号。因而只考察不改变定向的变换时，真张量与赝张量的差别不会显现。
+
+这种量称为赝张量。此式用于 $\Lambda^{\mathsf T}g\Lambda=g$ 的洛伦兹变换，此时 $|\det\Lambda|=1$。一般线性坐标变换还涉及行列式的大小及密度权重，不能直接沿用仅含符号的修正。
+
+\keepheading\subsection{缩并与行列式表达}
+
+缩并是把一个上指标与一个下指标配对并求和的运算；每缩并一对，自由指标就减少两个。下面计算 $\delta$ 与 $\varepsilon$ 的几个缩并，并将两个 $\varepsilon$ 的乘积写成 $\delta$ 的组合。先看最简单的例子：单位张量的四个对角元各为1，所以其迹为4。对于对称度规与完全反对称符号的两个指标的缩并，交换两个哑指标会使表达式变号，但哑指标改名不能改变和的值，因此该缩并为零。
+
+\begin{equation}\label{simple-contract}
+\delta^i{}_i=4,\qquad g_{ij}\varepsilon^{ijkl}=0.
+\end{equation}
+两个 $\varepsilon$ 的乘积为真张量。它对上下两组指标分别完全反对称，因此可用 Kronecker 符号组成的行列式表示：
+
+\begin{equation}\label{epsilon-determinant}
+\varepsilon^{ijkl}\varepsilon_{abcd}=-\begin{vmatrix}\delta^i{}_a&\delta^i{}_b&\delta^i{}_c&\delta^i{}_d\\\delta^j{}_a&\delta^j{}_b&\delta^j{}_c&\delta^j{}_d\\\delta^k{}_a&\delta^k{}_b&\delta^k{}_c&\delta^k{}_d\\\delta^l{}_a&\delta^l{}_b&\delta^l{}_c&\delta^l{}_d\end{vmatrix}.
+\end{equation}
+两侧对固定指标都只取 $0,\pm1$；交换任意两行或两列都变号。整体负号可由 $\varepsilon^{0123}\varepsilon_{0123}=-1$ 核对，它来自本稿的度规符号。逐次缩并得到：
+
+\begin{equation}\label{epsilon-one}
+\varepsilon^{ijkl}\varepsilon_{abcl}=-\begin{vmatrix}\delta^i{}_a&\delta^i{}_b&\delta^i{}_c\\\delta^j{}_a&\delta^j{}_b&\delta^j{}_c\\\delta^k{}_a&\delta^k{}_b&\delta^k{}_c\end{vmatrix}.
+\end{equation}
+\begin{equation}\label{epsilon-two}
+\varepsilon^{ijkl}\varepsilon_{abkl}=-2(\delta^i{}_a\delta^j{}_b-\delta^i{}_b\delta^j{}_a).
+\end{equation}
+\begin{equation}\label{epsilon-three}
+\varepsilon^{ijkl}\varepsilon_{ajkl}=-6\delta^i{}_a.
+\end{equation}
+\begin{equation}\label{epsilon-four}
+\varepsilon^{ijkl}\varepsilon_{ijkl}=-24.
+\end{equation}
+
+这些系数可以从“有多少个非零排列”来理解。缩并两个指标会把互换顺序对应的两项合在一起，产生 $2!$；缩并三个产生 $3!$；全缩并时共有 $4!=24$ 个非零项。由于一组指标升起而另一组降下，每个完全配对项都带相同的负号，故全缩并为 $-24$。这里的负号不能照搬三维欧氏空间的结果。
+
+\keepheading\subsection{对偶及其分量计算}
+
+下面利用 $\varepsilon$ 定义反对称张量的对偶。在前面的乘积公式中，两个 $\varepsilon$ 的乘积把一组含多个 $\delta$ 的交替和写得更加紧凑；这里则用一个 $\varepsilon$ 与反对称张量缩并，把一组指标对应的分量映射到互补指标对应的分量。两处使用的是同一个完全反对称符号，但所构造的表达式不同。在四维中，二阶反对称张量有六个独立分量，每一对指标都有一对互补指标，因此它的对偶仍为二阶反对称对象。对 $A^{ij}=-A^{ji}$，定义为：
+
+\begin{definitionBox}{二阶反对称张量的对偶}
+\begin{equation}\label{dual-two}
+(*A)^{ij}=\frac12\varepsilon^{ijkl}A_{kl}.
+\end{equation}
+\end{definitionBox}
+
+系数 $1/2$ 用于消除对 $(k,l)$ 与 $(l,k)$ 的重复计数。虽然 $A_{kl}$ 和 $\varepsilon^{ijkl}$ 都在交换这两个指标时变号，但它们的乘积不变，因此求和会把同一独立分量算两次。用一个具体分量展开，便能同时看清系数与符号的来源。
+
+以 $01$ 分量为例，只有 $23$ 与 $32$ 两项有贡献：
+
+\begin{equation}\label{dual-example}
+\begin{aligned}(*A)^{01}&=\tfrac12(\varepsilon^{0123}A_{23}+\varepsilon^{0132}A_{32})\\&=\tfrac12(A_{23}-A_{32})=A_{23}.\end{aligned}
+\end{equation}
+由此可知，所有的独立分量为：
+
+\begin{resultBox}{二阶反对称张量的对偶分量}
+\begin{equation}\label{dual-components}
+\begin{gathered}(*A)^{01}=A_{23},\quad (*A)^{02}=A_{31},\quad (*A)^{03}=A_{12},\\(*A)^{12}=A_{03},\quad (*A)^{13}=-A_{02},\quad (*A)^{23}=A_{01}.\end{gathered}
+\end{equation}
+\end{resultBox}
+四维矢量则可对偶为三阶完全反对称赝张量：
+
+\begin{definitionBox}{四维矢量的对偶}
+\begin{equation}\label{dual-three}
+(*A)^{ijk}=\varepsilon^{ijkl}A_l.
+\end{equation}
+\end{definitionBox}
+
+\begin{resultBox}{四维矢量的对偶分量}
+\begin{equation}\label{dual-vector}
+\begin{gathered}(*A)^{012}=A_3,\quad (*A)^{013}=-A_2,\\(*A)^{023}=A_1,\quad (*A)^{123}=-A_0.\end{gathered}
+\end{equation}
+\end{resultBox}
+
+四维矢量有四个分量，三阶完全反对称对象也只有四个独立分量，分别由缺少哪一个指标来标记，因此这种对应没有丢失独立信息。对偶中含一个完全反对称赝符号，所以当原对象是真矢量或真张量时，结果带有赝性质；这与下一步得到赝标量的判断一致。
+
+再考察二阶张量与其对偶的缩并。由于只含一个 $\varepsilon$，结果是赝标量：
+
+\begin{definitionBox}{二阶反对称张量与其对偶的缩并}
+\begin{equation}\label{pseudoscalar}
+P=A^{ij}(*A)_{ij}=\frac12\varepsilon_{ijkl}A^{ij}A^{kl}.
+\end{equation}
+\end{definitionBox}
+非零项可按互补指标对 $(01,23)$、$(02,13)$、$(03,12)$ 分为三组。第一组的八项为：
+
+\begin{equation}\label{eight-terms}
+\begin{aligned}S_{01|23}={}&\varepsilon_{0123}A^{01}A^{23}+\varepsilon_{0132}A^{01}A^{32}\\&+\varepsilon_{1023}A^{10}A^{23}+\varepsilon_{1032}A^{10}A^{32}\\&+\varepsilon_{2301}A^{23}A^{01}+\varepsilon_{2310}A^{23}A^{10}\\&+\varepsilon_{3201}A^{32}A^{01}+\varepsilon_{3210}A^{32}A^{10}.\end{aligned}
+\end{equation}
+由 $A$ 与 $\varepsilon$ 的反对称性，八项各自均为 $-A^{01}A^{23}$。对其余两组作相同整理，并计入式\eqref{pseudoscalar}的 $1/2$，得到：
+
+\begin{resultBox}{赝标量计算结果}
+\begin{equation}\label{pseudoscalar-result}
+P=-4\bigl(A^{01}A^{23}-A^{02}A^{13}+A^{03}A^{12}\bigr).
+\end{equation}
+\end{resultBox}
+
+三个括号项分别来自三种互补配对；中间项的相对负号由指标排列的奇偶性确定。每组八项再乘定义中的 $1/2$，便得到整体系数4。这一整理既避免漏项，也说明了为什么不能只取一个代表分量就直接写出完整缩并的数值。
+
+\keepheading\section{三维笛卡尔坐标中的极矢量与轴矢量}
+
+四维的对偶关系已经说明，反对称张量可以用互补指标重新组织。为了理解这种操作在熟悉的空间图像中意味着什么，先考察三维欧氏空间。这里使用笛卡尔正交坐标，度规为单位矩阵，协变与逆变分量数值相同，故空间指标统一写成下标；这一便利不能直接搬到闵氏时空的四维指标上。
+
+\begin{equation}\label{euclidean}
+g_{\alpha\beta}=\delta_{\alpha\beta},\qquad(g_{\alpha\beta})=\operatorname{diag}(1,1,1),\qquad\epsilon_{123}=1.
+\end{equation}
+三维的 $\epsilon_{\alpha\beta\gamma}$ 同样完全反对称。在正交坐标变换下，$\delta$ 为真张量，而保持固定数值约定的 $\epsilon$ 是赝张量；判断方法与前节相同。三维对偶使零阶与三阶、一次与二次反对称张量互相对应：
+
+\begin{equation}\label{dual-three-space}
+(*A)_{\alpha\beta}=\epsilon_{\alpha\beta\gamma}A_\gamma,\qquad *\Omega=\frac1{3!}\epsilon_{\alpha\beta\gamma}\Omega_{\alpha\beta\gamma}.
+\end{equation}
+
+三维矢量有三个独立分量，二阶反对称张量的三个独立分量可取为 $A_{23},A_{31},A_{12}$，所以两者能够一一对应。同理，三阶完全反对称张量只有一个独立分量，可用一个标量或赝标量表示。对偶是否改变真／赝性质取决于原对象，但其中出现一个 $\epsilon$ 所带来的定向因子始终需要保留。
+
+以下着重讨论矢量与二阶反对称张量。对 $R\in O(3)$，极矢量 $\boldsymbol p$ 与轴矢量 $\boldsymbol a$ 分别遵循：
+
+\begin{equation}\label{polar-axial}
+\boldsymbol p'=R\boldsymbol p,\qquad\boldsymbol a'=(\det R)R\boldsymbol a.
+\end{equation}
+
+当 $\det R=+1$ 时，两种矢量的变换形式相同，普通空间转动无法区分它们。差别只在反定向变换中出现：轴矢量比极矢量多一个行列式符号。因此，不能仅凭“三个分量”判断一个量是哪一种矢量，而应检查其来源与完整变换规律。
+
+特别在整体空间反演 $R=-I$ 下，极矢量变号，轴矢量不变。这里的“不变”针对整体反演；一般镜面反射并不保持轴矢量的所有分量。两个极矢量的叉乘就是轴矢量，它可理解为二阶反对称张量的对偶：
+
+\begin{equation}\label{cross}
+\begin{gathered}\boldsymbol C=\boldsymbol A\times\boldsymbol B,\qquad C_{\beta\gamma}=A_\beta B_\gamma-A_\gamma B_\beta,\\C_\alpha=\frac12\epsilon_{\alpha\beta\gamma}C_{\beta\gamma}.\end{gathered}
+\end{equation}
+
+先作反对称组合，再用 $\epsilon$ 取对偶，正好复现叉乘。这个过程解释了叉乘为何具有轴矢量性质，而不只是给出一个计算行列式的口诀。同样的构造用于四维张量的纯空间分量，便能把它们组织成一个三维轴矢量。
+
+利用这种三维对偶，四维二阶反对称张量可用一对三维量 $(\boldsymbol p,\boldsymbol a)$ 表示：
+
+\begin{equation}\label{antisymmetric-matrix}
+(A^{ij})=\begin{pmatrix}0&p_x&p_y&p_z\\-p_x&0&-a_z&a_y\\-p_y&a_z&0&-a_x\\-p_z&-a_y&a_x&0\end{pmatrix}.
+\end{equation}
+\begin{equation}\label{matrix-components}
+p_\alpha=A^{0\alpha},\qquad A^{\alpha\beta}=-\epsilon_{\alpha\beta\gamma}a_\gamma,\qquad a_\gamma=-\frac12\epsilon_{\gamma\alpha\beta}A^{\alpha\beta}.
+\end{equation}
+
+这里的六个独立分量分成两组：$A^{01},A^{02},A^{03}$ 是时间—空间分量，另外三个独立空间分量是 $A^{23},A^{31},A^{12}$。因此 $(\boldsymbol p,\boldsymbol a)$ 只是同一个反对称张量的分量重组，不是两个互不相关的四维矢量；这种重组依赖所选的时间与空间分解。
+
+在纯空间正交变换下，$\boldsymbol p$ 是极矢量，$\boldsymbol a$ 是轴矢量；一般洛伦兹推动会混合两者。降低两个四维指标只使时间—空间分量变号，因此同一矩阵约定下可简记 $A_{ij}=(-\boldsymbol p,\boldsymbol a)$。
+
+\keepheading\section{张量微积分初步}
+
+\keepheading\subsection{标量函数的微分}
+
+前面的讨论处理同一点处的张量分量。现在让这些分量随时空位置变化，便需要引入微分与积分。最简单的起点是光滑标量函数 $\varphi$：虽然各偏导数随坐标系改变，函数在同一微小位移上的总变化 $d\varphi$ 必须不变。因此，全微分应写成协变分量与逆变线元的缩并：
+
+\begin{equation}\label{differential}
+\begin{gathered}d\varphi=\partial_i\varphi\,dx^i,\qquad\partial_i\varphi=\frac{\partial\varphi}{\partial x^i},\\(\partial_i\varphi)=\left(\frac1c\frac{\partial\varphi}{\partial t},\boldsymbol\nabla\varphi\right),\qquad(dx^i)=(c\,dt,dx,dy,dz).\end{gathered}
+\end{equation}
+
+从链式法则也可看出这个指标位置：坐标线元按 $\Lambda$ 变换，偏导数的系数则按逆矩阵变换，二者缩并后恰好抵消坐标变化。时间偏导数前的 $1/c$ 来自 $x^0=ct$；空间部分保持普通三维梯度的三个分量，所以整个表达式的各分量量纲一致。
+
+因此 $\partial_i\varphi$ 是协变分量。若将“梯度”定义为微分的度规对偶矢量，则其逆变分量为下式；两种说法须通过指标位置区分。
+
+\begin{equation}\label{raised-gradient}
+(\partial^i\varphi)=g^{ij}\partial_j\varphi=\left(\frac1c\frac{\partial\varphi}{\partial t},-\boldsymbol\nabla\varphi\right).
+\end{equation}
+\keepheading\subsection{四类积分元}
+
+微分中已经出现线元 $dx^i$，它同样是沿曲线积分时的积分元。若积分域不再是一条曲线，而是二维曲面、三维超曲面或四维区域，就需要由更多独立切向线元生成相应积分元。因而四维时空的积分自然分成四类。以下 $dx_{(1)}^i,dx_{(2)}^i,dx_{(3)}^i$ 表示不同切向线元，括号数字只是区分这些线元的标签，不是求和指标。
+
+二维曲面的有向面元由两个切向线元生成，是二阶反对称张量：
+
+\begin{equation}\label{area}
+df^{ij}=dx_{(1)}^i dx_{(2)}^j-dx_{(1)}^j dx_{(2)}^i.
+\end{equation}
+
+交换两个切向线元会反转小平行四边形的定向，故面元需要反对称。$df^{ij}$ 可以理解为这个有向小面元在坐标平面 $x^ix^j$ 上的投影分量；因此给出面元时，面积大小与方向信息是一起保留的。
+
+三维超曲面上的积分元由三个切向线元生成，对三个指标完全反对称：
+
+\begin{equation}\label{hypersurface}
+dS^{ijk}=\begin{vmatrix}dx_{(1)}^i&dx_{(2)}^i&dx_{(3)}^i\\dx_{(1)}^j&dx_{(2)}^j&dx_{(3)}^j\\dx_{(1)}^k&dx_{(2)}^k&dx_{(3)}^k\end{vmatrix}.
+\end{equation}
+
+这里的超曲面是四维时空中的三维积分域，并不是四维体积。行列式保证任意交换两个切向线元都会改变定向，也保证三个线元线性相关时体积元为零。三个自由指标标记该小体积在不同三维坐标超平面上的投影。
+
+四维区域的积分使用体积元：
+
+\begin{equation}\label{volume}
+d\Omega=dx^0dx^1dx^2dx^3=c\,dt\,dx\,dy\,dz=c\,dt\,dV.
+\end{equation}
+这里的 $d\Omega$ 表示四维小区域的体积元，其中 $c\,dt$ 是时间方向的长度，$dV=dx\,dy\,dz$ 是三维空间体积元。只讨论体积大小时，取相应乘积的绝对值。洛伦兹变换满足 $|\det\Lambda|=1$，所以同一小区域的四维体积大小不变。若还记录坐标轴排列的方向，交换两个轴的次序会使有向体积元变号；在保持该方向的洛伦兹变换下，$d\Omega$ 本身不变。
+
+\keepheading\subsection{面元与超曲面元的对偶}
+
+面元的反对称分量能够完整记录积分面的小片方向，但独立分量较多时，对偶表示可以提供更直观的描述。需要注意，对偶改变的是表示方式，其结果的阶数依赖空间维数。三维中一对指标的补集只有一个指标，面元的对偶因而是矢量；四维中补集仍有两个指标，所以面元的对偶仍为二阶反对称张量：
+
+\begin{equation}\label{dual-area}
+df^{*ij}=\frac12\varepsilon^{ijkl}df_{kl}.
+\end{equation}
+对非退化切平面，对偶方向的几何解释是与原切平面正交的二维平面，而不是一个法向矢量。对可分解的面元有 $df^{*ij}df_{ij}=0$；零平面的正交补可能与原平面相交，需另作区分。
+
+三阶超曲面元则可对偶为四维法向量形式的面元。按本稿的符号约定：
+
+\begin{equation}\label{dual-hypersurface}
+dS^i=-\frac1{3!}\varepsilon^{ijkl}dS_{jkl},\qquad dS_{jkl}=\varepsilon_{ijkl}dS^i.
+\end{equation}
+
+四维中的三阶完全反对称面元有四个独立分量，故可用一个四分量对象重新表示。这里 $dS^i$ 的“矢量形式”只指变换性质和法向方向，不能据此把积分域误认作曲线。系数 $1/3!$ 同样来自三个缩并指标的排列计数，整体负号由本稿的 $\varepsilon$ 与度规约定确定。
+
+例如 $dS^0=dS^{123}$、$dS^1=dS^{023}$。在 $x^0$ 为常数的超平面上，$dS^0=dx\,dy\,dz$。对非退化超曲面，它具有法向意义；它仍是三维积分元，不能当作沿曲线的切向线元。
+
+\keepheading\subsection{四维积分的分量变换公式}
+
+有了线元、面元及超曲面元，就可以将边界上的积分与内部的积分联系起来。下面依次讨论闭合超曲面、闭合二维曲面和闭合曲线，采用《场论》的分量公式\cite{landau-fields}。各积分域取一致定向，场在域及边界上足够光滑。积分元代换的箭头表示应在整个积分中同时代入积分元与求导算符，不是两个局部积分元逐点相等。若被积量还带有未缩并的指标，这些指标原样保留，相同公式对其各分量分别成立。
+
+\keepheading\textbf{闭合超曲面与四维区域。} 设 $\mathcal V$ 是四维区域，$\partial\mathcal V$ 是其闭合边界超曲面。用 $d\Omega\,\partial_i$ 代替 $dS_i$，即得四维高斯公式：
+\begin{equation}\label{gauss-four}
+\begin{gathered}
+dS_i\ \longrightarrow\ d\Omega\,\frac{\partial}{\partial x^i},\\
+\oint_{\partial\mathcal V} A^i\,dS_i
+=\int_{\mathcal V}\frac{\partial A^i}{\partial x^i}\,d\Omega.
+\end{gathered}
+\end{equation}
+
+左边把矢量在整个闭合边界上的法向分量累加，右边则把内部各点的散度累加，所以它与三维高斯公式具有相同的“总通量等于内部源的总和”的结构。四维情形只改变积分域与指标的维数，不改变这种边界与内部的对应关系。
+
+\keepheading\textbf{闭合二维曲面与超曲面。} 设 $\mathcal H$ 是三维超曲面，其边界 $\partial\mathcal H$ 是闭合二维曲面。对于二阶反对称张量 $A^{ik}=-A^{ki}$，面元代换及对应积分公式为：
+\begin{equation}\label{surface-hypersurface}
+\begin{gathered}
+df^*_{ik}\ \longrightarrow\ dS_i\frac{\partial}{\partial x^k}-dS_k\frac{\partial}{\partial x^i},\\
+\begin{aligned}
+\frac12\oint_{\partial\mathcal H}A^{ik}\,df^*_{ik}
+&=\frac12\int_{\mathcal H}\left(dS_i\frac{\partial A^{ik}}{\partial x^k}-dS_k\frac{\partial A^{ik}}{\partial x^i}\right)\\
+&=\int_{\mathcal H}dS_i\frac{\partial A^{ik}}{\partial x^k}.
+\end{aligned}
+\end{gathered}
+\end{equation}
+
+式中的 $1/2$ 避免把反对称指标对 $(i,k)$ 与 $(k,i)$ 重复计算。二维边界使用对偶面元 $df^*_{ik}$，是为了与内部超曲面元 $dS_i$ 配合，并使整个关系保持同样的缩并形式。定向一旦选定，两侧都必须沿用，不能单独改变某一侧的面元符号。
+
+最后一步利用 $A^{ik}$ 的反对称性并交换哑指标，两个积分项相同，从而抵消系数 $1/2$。
+
+\keepheading\textbf{闭合曲线与二维曲面。} 设 $\Sigma$ 为二维曲面，$\partial\Sigma$ 为其闭合边界曲线。对于协变矢量 $A_i$，用 $df^{ki}\partial_k$ 代替 $dx^i$，得到四维形式的斯托克斯公式：
+\begin{equation}\label{stokes-components}
+\begin{gathered}
+dx^i\ \longrightarrow\ df^{ki}\frac{\partial}{\partial x^k},\\
+\begin{aligned}
+\oint_{\partial\Sigma}A_i\,dx^i
+&=\int_\Sigma df^{ki}\frac{\partial A_i}{\partial x^k}\\
+&=-\frac12\int_\Sigma df^{ki}\left(\frac{\partial A_k}{\partial x^i}-\frac{\partial A_i}{\partial x^k}\right).
+\end{aligned}
+\end{gathered}
+\end{equation}
+
+左边是沿闭合边界的环量，右边说明环量由面内的反对称导数决定。把指标 $i,k$ 同时交换，面元变号，所以偏导数中对称的部分会相消；保留下来的差正是该公式只依赖反对称部分的原因。这也解释了系数 $1/2$ 与最后一个负号如何随指标次序一起出现。
+
+其中 $df^{ki}=-df^{ik}$，所以只有 $\partial_k A_i$ 的反对称部分参与积分。以上三种关系保留前文面元和超曲面元的定义，直接用指标缩并表达。
+
+\clubpenalty=10000\widowpenalty=10000\keepheading\section{相对论运动学}
+张量微积分可以直接用于描述粒子运动。粒子经历的事件在时空中构成世界线；若希望其切向量也按四维矢量变换，就应对各惯性系共同认可的参数求导，而不是把某个参考系的坐标时间作为共同参数。对于未来指向的光滑类时世界线，取 $v=|\boldsymbol v|<c$，用固有时 $\tau$ 或间隔 $s=c\tau$ 参数化，便可依次定义四速度与四加速度\cite{landau-fields}。沿用 $(+---)$ 度规及 $x^i=(ct,\boldsymbol x)$，并取 $ds=c\,d\tau>0$。
+
+首先对四维坐标求关于间隔的导数，定义四速度。由 $ds=c\sqrt{1-v^2/c^2}\,dt$，可逐步得到：
+
+\begin{definitionBox}{四速度的定义}
+\begin{equation}\label{four-velocity}
+\begin{aligned}u^i=\frac{dx^i}{ds}&=\frac{1}{c\sqrt{1-v^2/c^2}}\left(\frac{d(ct)}{dt},\frac{d\boldsymbol x}{dt}\right)\\&=\frac{1}{c\sqrt{1-v^2/c^2}}(c,\boldsymbol v)\\&=\gamma\left(1,\frac{\boldsymbol v}{c}\right),\qquad\gamma=\frac1{\sqrt{1-v^2/c^2}}.\end{aligned}
+\end{equation}
+\end{definitionBox}
+
+四速度是世界线的切向量，但它的空间部分是 $\gamma\boldsymbol v/c$，并不等于普通三维速度。两者差别来自求导参数：相邻事件的坐标时间间隔 $dt$ 与固有时间间隔 $d\tau$ 相差因子 $\gamma$。时间分量 $u^0=\gamma$ 与空间分量必须一起保留，才组成一个按洛伦兹变换规律变化的整体。
+
+这里采用朗道的无量纲定义 $u^i=dx^i/ds$。若采用关于固有时求导的定义 $U^i=dx^i/d\tau$，则 $U^i=c\,u^i$，二者不可混用。
+
+其次引入快度。将三维速度写为 $\boldsymbol v=v\widehat{\boldsymbol n}$，其中 $\widehat{\boldsymbol n}\cdot\widehat{\boldsymbol n}=1$。由快度定义可得：
+
+\begin{equation}\label{rapidity-identities}
+\begin{gathered}\tanh\eta=\frac vc,\qquad\cosh\eta=\frac1{\sqrt{1-v^2/c^2}}=\gamma,\\\sinh\eta=\frac vc\cosh\eta,\qquad v\cosh\eta=c\sinh\eta.\end{gathered}
+\end{equation}
+\begin{equation}\label{velocity-rapidity}
+u^i=\frac{\cosh\eta}{c}(c,v\widehat{\boldsymbol n})=(\cosh\eta,\sinh\eta\,\widehat{\boldsymbol n}).
+\end{equation}
+在瞬时静止点 $v=0$，速度方向可以不唯一，但 $u^i=(1,\boldsymbol 0)$ 仍有确定值。由双曲函数恒等式，四速度在闵氏度规下是单位类时矢量：
+
+\begin{equation}\label{velocity-unit-rapidity}
+u^iu_i=\cosh^2\eta-\sinh^2\eta\,(\widehat{\boldsymbol n}\cdot\widehat{\boldsymbol n})=1.
+\end{equation}
+同一结论也可直接由线元的内积得到，不依赖快度表示：
+
+\begin{resultBox}{四速度的归一化}
+\begin{equation}\label{velocity-unit-interval}
+dx^i dx_i=ds^2\quad\Longrightarrow\quad u^iu_i=\frac{dx^i}{ds}\frac{dx_i}{ds}=1.
+\end{equation}
+\end{resultBox}
+
+以上两种计算都证明四速度满足 $u^iu_i=1$。在快度计算中，把 $u^i=(\cosh\eta,\sinh\eta\,\widehat{\boldsymbol n})$ 代入闵氏内积，利用双曲函数恒等式得到结果。在间隔计算中，把定义 $u^i=dx^i/ds$ 代入同一内积，再利用 $dx^idx_i=ds^2$ 得到结果。
+
+进一步对四速度求关于间隔的导数，定义四加速度 $w^i$。下面的快度分量式适用于方向 $\widehat{\boldsymbol n}$ 固定的直线运动；以下在这一条件下计算，并令 $\kappa=d\eta/ds=(1/c)\,d\eta/d\tau$。
+
+\begin{definitionBox}{四加速度（固定运动方向）}
+\begin{equation}\label{four-acceleration}
+\begin{aligned}w^i=\frac{d^2x^i}{ds^2}=\frac{du^i}{ds}&=\frac1c\frac{d\eta}{d\tau}(\sinh\eta,\cosh\eta\,\widehat{\boldsymbol n})\\&=\kappa(\sinh\eta,\cosh\eta\,\widehat{\boldsymbol n}).\end{aligned}
+\end{equation}
+\end{definitionBox}
+$\kappa$ 的量纲为长度的倒数；$\kappa$ 表示快度对间隔的变化率，与普通三维加速度不同。若运动方向随时间变化，对式\eqref{velocity-rapidity}求导还会出现方向导数项，不能直接使用上述固定方向分量式。
+
+\keepheading 最后验证正交性。四速度恒为单位矢量，度规在当前惯性坐标系中为常量，因此：
+
+\begin{resultBox}{四速度与四加速度正交}
+\begin{equation}\label{velocity-acceleration-orthogonal}
+\frac{d}{ds}(u^iu_i)=2w^iu_i=0\quad\Longrightarrow\quad w^iu_i=0.
+\end{equation}
+\end{resultBox}
+
+这个求导步骤使用了四速度的归一化恒等式 $u^iu_i=1$，以及当前惯性坐标系中的度规为常量。对 $u^iu_i$ 的两个因子分别求导时，两项可借助度规的对称性合并，所以得到系数2。等式 $u_iw^i=0$ 明确表示四速度 $u^i$ 与四加速度 $w^i$ 的闵氏内积为零。四加速度描述四速度沿世界线的变化；这个变化必须保持 $u^iu_i=1$，因而不能含有沿四速度自身的分量。
+
+\keepheading 这个结论适用于一般光滑类时运动，不需要固定方向假设。对上面的直线运动，还可在快度表示下直接核对：
+
+\begin{equation}\label{orthogonality-rapidity}
+\begin{aligned}w^iu_i&=\kappa\bigl[\sinh\eta\cosh\eta-\cosh\eta\sinh\eta\,(\widehat{\boldsymbol n}\cdot\widehat{\boldsymbol n})\bigr]\\&=0.\end{aligned}
+\end{equation}
+\begin{resultBox}{运动学总结：位移、速度与加速度的类型}
+对有质量粒子的光滑类时世界线，沿线的非零切向位移、四速度和四加速度满足：
+\begin{itemize}
+\setlength{\itemsep}{2pt}\setlength{\parsep}{0pt}
+\item 切向位移 $dx^i$ 为类时：$dx^idx_i=ds^2>0$。
+\item 四速度 $u^i$ 为类时：$u^iu_i=1>0$。
+\item 非零四加速度 $w^i$ 为类空：$w^iw_i<0$；无加速时 $w^i=0$。
+\end{itemize}
+\end{resultBox}
+\par\medskip\noindent\begin{minipage}{\linewidth}
+\begin{thebibliography}{9}
+\bibitem{landau-fields} L. D. Landau, E. M. Lifshitz. 《理论物理学教程 第二卷：场论》（第八版）. 鲁欣、任朗、袁炳南译。北京：高等教育出版社，2012。ISBN 978-7-04-035173-6。第一章第6、7节，参照所提供书页第16--25页。
+\end{thebibliography}
+\par\medskip{\small 反馈请注明版本、章节及公式编号。本稿尚未发布，反馈入口未配置。原创整理内容采用 CC BY 4.0；引用来源的权利归原权利人。公开署名暂未指定，再利用请保留题名、版本、许可链接并说明修改。\par\texttt{\licenseurl}}
+\end{minipage}
+\end{document}

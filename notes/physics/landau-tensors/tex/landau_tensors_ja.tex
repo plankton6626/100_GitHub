@@ -1,0 +1,561 @@
+% Compile: xelatex -interaction=nonstopmode -halt-on-error FILE.tex (run twice).
+% Dependencies: xeCJK, amsmath, amssymb, indentfirst, xcolor, tcolorbox, tikz, hyperref.
+% Japanese fonts: Yu Mincho / Yu Gothic; replace with open CJK fonts when needed.
+% Set Chinese: \chinesetrue; English: \englishtrue; Japanese: both false.
+% Render separate _zh, _en and _ja files with identical semantic labels.
+% Chinese fonts: SimSun/SimHei or Noto CJK SC. English uses Latin fonts only.
+% Small bibliographies: thebibliography + bibitem + cite; run XeLaTeX twice.
+\documentclass[a4paper,12pt]{article}
+\usepackage{xeCJK}
+\setCJKmainfont{Yu Mincho}[AutoFakeBold=2]
+\setCJKsansfont{Yu Gothic}[AutoFakeBold=2]
+\setCJKmonofont{Yu Mincho}
+
+\newif\ifchinese
+\chinesefalse
+\newif\ifenglish
+\englishfalse
+\usepackage{amsmath,amssymb}
+\usepackage{indentfirst}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\definecolor{Lime}{HTML}{FFEA00}
+\definecolor{Spring}{HTML}{BFEF40}
+\definecolor{Mint}{HTML}{80F580}
+\definecolor{Aqua}{HTML}{40FABF}
+\definecolor{Cyan}{HTML}{00FFFF}
+\colorlet{Ink}{Mint!20!black}
+\colorlet{SubInk}{Aqua!23!black}
+\colorlet{MutedInk}{Cyan!22!black}
+
+\setlength{\textwidth}{\dimexpr\paperwidth-50mm\relax}
+\setlength{\textheight}{\dimexpr\paperheight-50mm\relax}
+\setlength{\oddsidemargin}{\dimexpr25mm-1in\relax}
+\setlength{\evensidemargin}{\oddsidemargin}
+\setlength{\topmargin}{\dimexpr25mm-1in\relax}
+\setlength{\headheight}{0pt}
+\setlength{\headsep}{0pt}
+\setlength{\footskip}{12mm}
+\setlength{\parindent}{1em}
+\setlength{\parskip}{2pt}
+\linespread{1.06}
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{\z@}
+  {-1.1em \@plus -0.2em \@minus -0.1em}{0.45em}
+  {\normalfont\sffamily\normalsize\bfseries\color{Ink}}}
+\renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}
+  {-0.9em \@plus -0.2em \@minus -0.1em}{0.35em}
+  {\normalfont\sffamily\normalsize\bfseries\color{SubInk}}}
+\def\ps@study{%
+  \def\@oddhead{}\def\@evenhead{}%
+  \def\@oddfoot{\hfil{\sffamily\small\color{MutedInk}\thepage}\hfil}%
+  \let\@evenfoot\@oddfoot}
+\makeatother
+\pagestyle{study}
+
+\newcommand{\compactmath}{%
+  \setlength{\abovedisplayskip}{3pt plus 1pt minus 1pt}%
+  \setlength{\belowdisplayskip}{3pt plus 1pt minus 1pt}%
+  \setlength{\abovedisplayshortskip}{2pt plus 1pt}%
+  \setlength{\belowdisplayshortskip}{2pt plus 1pt}%
+  \setlength{\jot}{2pt}}
+\AtBeginDocument{\compactmath\setlength{\parindent}{1em}}
+\newsavebox{\displaymeasure}
+% Optional: keep ordinary formulas in one line when they fit the current width.
+\newcommand{\fitmath}[2]{%
+  \compactmath
+  \sbox{\displaymeasure}{$\displaystyle #1$}%
+  \ifdim\wd\displaymeasure>\linewidth
+    \[\begin{gathered}#2\end{gathered}\]%
+  \else
+    \[#1\]%
+  \fi
+  \par}
+
+\tcbset{studybox/.style={
+  sharp corners,boxrule=0.7pt,leftrule=1.4pt,
+  left=2.5mm,right=2.5mm,top=1.5mm,bottom=1.5mm,
+  before skip=8pt,after skip=8pt,
+  fonttitle=\sffamily\bfseries\small,coltitle=Ink,
+  fontupper=\normalsize,colupper=black,
+  before upper={\compactmath\setlength{\parindent}{1em}}
+}}
+\newtcolorbox{definitionBox}[1]{studybox,
+  colback=Lime!10!white,colframe=Lime!42!black,coltitle=Lime!30!black,
+  colbacktitle=Lime!28!white,title={#1}}
+\newtcolorbox{resultBox}[1]{studybox,
+  colback=Cyan!8!white,colframe=Cyan!38!black,coltitle=Cyan!25!black,
+  colbacktitle=Cyan!28!white,title={#1}}
+\newtcolorbox{explanationBox}[1]{studybox,
+  colback=Cyan!8!white,colframe=Aqua!35!black,
+  colbacktitle=Cyan!24!white,title={#1}}
+
+
+\usepackage{tikz}
+\IfFileExists{kvsetkeys.sty}{\usepackage{hyperref}}{%
+  \newcommand{\hypersetup}[1]{}}
+\hypersetup{unicode=true,colorlinks=true,linkcolor=Ink,urlcolor=SubInk,
+  pdfauthor={},pdfsubject={Independent study notes},pdfcreator={XeLaTeX}}
+\setcounter{tocdepth}{1}
+\ifchinese
+  \renewcommand{\contentsname}{目录}
+  \renewcommand{\refname}{参考文献}
+  \newcommand{\notetitle}{学习笔记}
+  \newcommand{\notemetadata}{版本：0.7\quad 日期：2026-10-20\quad 许可：CC BY 4.0}
+  \newcommand{\licensetext}{除另有说明的第三方材料外，原创内容采用 CC BY 4.0。再利用须适当署名、提供许可链接并说明修改。公开署名暂留白。}
+\else\ifenglish
+  \renewcommand{\contentsname}{Contents}
+  \renewcommand{\refname}{References}
+  \newcommand{\notetitle}{Study Notes}
+  \newcommand{\notemetadata}{Version: 0.7\quad Date: 2026-10-20\quad License: CC BY 4.0}
+  \newcommand{\licensetext}{Except for separately identified third-party material, original content is licensed under CC BY 4.0. Reuse requires appropriate attribution, a license link and an indication of changes. The public author name is currently unspecified.}
+\else
+  \renewcommand{\contentsname}{目次}
+  \renewcommand{\refname}{参考文献}
+  \newcommand{\notetitle}{学習ノート}
+  \newcommand{\notemetadata}{版：0.7\quad 日付：2026-10-20\quad ライセンス：CC BY 4.0}
+  \newcommand{\licensetext}{別途示す第三者の資料を除き、オリジナルの内容は CC BY 4.0 で提供する。再利用時は適切な帰属表示、ライセンスへのリンク、変更の明示が必要である。公開著者名は現在未指定である。}
+\fi\fi
+\newcommand{\publicauthor}{}
+\newcommand{\licenseurl}{https://creativecommons.org/licenses/by/4.0/}
+\newcommand{\spectrum}{%
+  \begin{tikzpicture}
+  \shade[left color=Lime,right color=Spring] (0,0) rectangle (4,0.10);
+  \shade[left color=Spring,right color=Mint] (4,0) rectangle (8,0.10);
+  \shade[left color=Mint,right color=Aqua] (8,0) rectangle (12,0.10);
+  \shade[left color=Aqua,right color=Cyan] (12,0) rectangle (16,0.10);
+  \end{tikzpicture}}
+
+\usepackage{textcomp}
+\emergencystretch=2em
+\raggedbottom
+\newdimen\remainingpage
+\newcommand{\keepheading}{\par\begingroup\dimen0=150pt\vskip0pt plus\dimen0\penalty-100\vskip0pt plus-\dimen0\vskip\dimen0\penalty9999\vskip-\dimen0\vskip0pt\endgroup}
+\clubpenalty=10000\widowpenalty=10000
+\begin{document}
+{\Large\sffamily\bfseries\color{Ink} 四次元テンソル・双対・微積分}
+\par\smallskip{\small\notemetadata}\par\smallskip\noindent\spectrum\par\smallskip
+著者が手書きの導出と文章資料を提供し、AI が転記、整理、翻訳、LaTeX 組版を補助した。本版は著者による確認前のローカル閲覧稿である。
+\tableofcontents\clearpage
+\keepheading\section{テンソルの基本定義}
+
+テンソルは、座標の選び方が変わっても物理的な関係を整合的に表すための道具である。座標を変えると各成分は変化しうるが、その変化は一定の変換則に従わなければならない。この変換則から出発し、計量、縮約、双対を導入した後、積分と粒子の運動に応用する。規約は参考文献の第1章第6、7節\cite{landau-fields}に従う。四次元の添字 $i,j,k,l$ は $0,1,2,3$、空間の添字 $\alpha,\beta,\gamma$ は $1,2,3$ をとり、上下に繰り返す添字について和をとる。
+
+可逆な線形座標変換 $x^{\prime i}=\Lambda^i{}_j x^j$ を考える。ある量の成分を上付き添字 $r$ 個と下付き添字 $s$ 個で表し、各上付き添字には変換行列 $\Lambda$、各下付き添字には逆行列 $\Lambda^{-1}$ を対応させる。これらの規則に従う添字を、それぞれ\textbf{反変添字}、\textbf{共変添字}と呼ぶ。この名称は二つの変換則を区別するためのものである。成分全体が次の変換則に従うとき、全階数 $r+s$ の $(r,s)$ 型混合テンソルと呼ぶ。上下の添字の相対的な順序は保つ。
+
+\begin{definitionBox}{混合テンソルの定義}
+\begin{equation}\label{tensor-law}
+\begin{aligned}
+(A')^{i_1\cdots i_r}{}_{j_1\cdots j_s}
+={}&\Lambda^{i_1}{}_{a_1}\cdots\Lambda^{i_r}{}_{a_r}\\
+&\mathrel{}\times(\Lambda^{-1})^{b_1}{}_{j_1}\cdots(\Lambda^{-1})^{b_s}{}_{j_s}
+A^{a_1\cdots a_r}{}_{b_1\cdots b_s}.
+\end{aligned}
+\end{equation}
+\end{definitionBox}
+
+右辺の $a_1,\ldots,a_r,b_1,\ldots,b_s$ は和をとるダミー添字であり、左辺の添字は変換後の成分を指定する。下付き添字に逆行列が対応するため、上下の添字を組にすると座標変換の行列が相殺される。この性質が後の内積と縮約を可能にする。従ってテンソルを特徴付けるのは成分の個数だけではなく、成分全体が従う変換則である。
+
+$s=0$ は純反変テンソル、$r=0$ は純共変テンソルである。$(0,0)$ 型はスカラー、$(1,0)$ 型は反変ベクトル、$(0,1)$ 型は共変ベクトルとなる。
+
+特殊相対論では慣性系の間にローレンツ変換を用いる。$x$ 方向のブーストを次式で約束し、ラピディティー $\eta$ を $\tanh\eta=v/c$ で定める。これは $x'=\gamma(x-vt)$ に対応し、逆変換では非対角成分の符号が正になる。
+
+\begin{equation}\label{boost}
+\Lambda=\begin{pmatrix}\cosh\eta&-\sinh\eta&0&0\\-\sinh\eta&\cosh\eta&0&0\\0&0&1&0\\0&0&0&1\end{pmatrix},\qquad \tanh\eta=\frac vc.
+\end{equation}
+
+この行列は時間と運動方向の空間成分だけを混合し、横方向の $y,z$ は変えない。ラピディティーを使うと、間隔を保つ条件が双曲線関数の恒等式 $\cosh^2\eta-\sinh^2\eta=1$ と結び付く。後で四元速度を表す際にも同じ構造が現れる。
+
+\keepheading\section{ミンコフスキー計量と関連する計算}
+
+特殊相対論では、あらかじめ計量を仮定するのではなく、物理的な議論から先に事象間の間隔を得る。原書は相対性原理と光速不変性に基づいて事象間の関係を論じ、慣性系によらない間隔 $ds^2=c^2dt^2-dx^2-dy^2-dz^2$ を得る。$x^i=(ct,x,y,z)$ として時間と空間の座標の次元をそろえると、この既知の二次式の係数からミンコフスキー計量 $g_{ij}$ を読み取れる。従って間隔はテンソル記法で次のように書ける。
+
+\begin{definitionBox}{間隔から読み取る計量}
+\begin{equation}\label{metric}
+\begin{gathered}ds^2=c^2dt^2-dx^2-dy^2-dz^2=g_{ij}\,dx^i dx^j,\\(g_{ij})=\operatorname{diag}(1,-1,-1,-1).\end{gathered}
+\end{equation}
+\end{definitionBox}
+計量を用いてテンソルを縮約し、ベクトルの内積を定める。
+
+\begin{equation}\label{trace}
+g_{ij}A^{ij}=A^i{}_i=A^0{}_0+A^1{}_1+A^2{}_2+A^3{}_3.
+\end{equation}
+
+ここでは $g_{ij}$ で $A^{ij}$ の添字を一つ下げてから、上下の添字をそろえて和をとる。自由添字が残らないので結果はスカラーである。反変成分だけで展開すれば $A^{00}-A^{11}-A^{22}-A^{33}$ となり、混合成分の対角和ではこれらの負号が添字を下げる操作に含まれている。
+
+\begin{equation}\label{inner}
+\begin{gathered}g_{ij}X^iY^j=X^iY_i,\\X^iY_i=X^0Y^0-X^1Y^1-X^2Y^2-X^3Y^3.\end{gathered}
+\end{equation}
+\keepheading\textbf{逆計量の定義。} 共変計量の行列を $G=(g_{ij})$ とすると、逆計量の成分 $g^{ij}$ は逆行列 $G^{-1}$ の要素として定義される。ここでは $G=\operatorname{diag}(1,-1,-1,-1)$ なので $G^2=I$、従って $G^{-1}=G$ となる。この数値的な一致は採用した直交座標と符号規約によるものであり、上下の添字の区別は必要である。計量は添字を下げ、逆計量は添字を上げる。
+
+\begin{definitionBox}{逆計量と添字の上げ下げ}
+\begin{equation}\label{raise-lower}
+\begin{gathered}
+(g^{ij})=G^{-1}=\operatorname{diag}(1,-1,-1,-1),\\
+g^{ik}g_{kj}=\delta^i{}_j,\qquad g_{ik}g^{kj}=\delta_i{}^j,\\
+A_i=g_{ij}A^j,\qquad A^i=g^{ij}A_j.
+\end{gathered}
+\end{equation}
+\end{definitionBox}
+
+添字の上げ下げは別の物理的対象を作るのではなく、同じ対象の成分表示を変える。現在の計量では時間成分は変わらず、空間成分は符号を変える。空間添字を一つ上げ下げするごとに負号が一つ入るため、2階テンソルの二つの空間添字では負号が相殺され、時間と空間の混合成分では一度だけ符号が変わる。
+
+ミンコフスキー計量は正定値ではない。零でないベクトルは $A^iA_i$ が正、負、零であるかに応じて、時間的、空間的、光的と呼ばれる。この区別は事象間の因果関係を分類する幾何学的基礎となる。
+
+\keepheading\section{$\delta$ と $\varepsilon$ の考察}
+
+\subsection{テンソルと擬テンソル}
+
+計量と添字の操作を導入したので、単位テンソル $\delta^i{}_j$ と完全反対称記号 $\varepsilon^{ijkl}$ を比較できる。どちらもここで使う座標では簡単な数値表をもつが、数値が固定されていることだけで変換の性質まで同じとは限らない。直交慣性座標で定義し、反射によってその違いを確かめる。
+
+\begin{definitionBox}{単位テンソルと完全反対称記号}
+\begin{equation}\label{symbols}
+\delta^i{}_j=\begin{cases}1&i=j,\\0&i\ne j,\end{cases}\qquad \varepsilon^{0123}=1,\qquad \varepsilon_{0123}=-1.
+\end{equation}
+\end{definitionBox}
+
+$\delta^i{}_j$ は入力ベクトルの成分をそのまま取り出すので、恒等変換の成分とみなせる。$\varepsilon$ は添字がすべて異なるかどうかと、その並びの向きを記録する。二つの添字が同じなら、その交換で値は変わらない一方、反対称性は符号の反転を要求するため、成分は零となる。それ以外の符号は置換の偶奇で決まる。
+
+$\varepsilon^{ijkl}$ は $0123$ の偶置換で $+1$、奇置換で $-1$、添字が重複するときは零となる。下付き成分は計量で四つの添字を下げて得る。
+
+反射 $T=\operatorname{diag}(-1,1,1,1)$ を考えると $T^{-1}=T$ である。単位テンソルの定義は保たれる。
+
+\begin{equation}\label{delta-transform}
+(\delta')^i{}_j=T^i{}_k(T^{-1})^l{}_j\delta^k{}_l=\delta^i{}_j.
+\end{equation}
+
+反射は真・擬の性質を調べるための検査であり、テンソルの定義そのものに代わるものではない。$\delta$ の上下の添字には互いに逆の行列が作用するため、相殺後も単位行列が残る。この相殺は任意の可逆線形変換で成り立つ。
+
+$\varepsilon$ を通常の4階反変テンソルとして変換すると、$0123$ 成分は $-1$ となる。反射後の座標系でも同じ数値規約を保つには符号の補正が必要である。
+
+\begin{equation}\label{epsilon-transform}
+(\varepsilon')^{ijkl}=\operatorname{sgn}(\det\Lambda)\,\Lambda^i{}_a\Lambda^j{}_b\Lambda^k{}_c\Lambda^l{}_d\varepsilon^{abcd}.
+\end{equation}
+
+追加の $\operatorname{sgn}(\det\Lambda)$ は、座標の向きが変わることへの補正と理解できる。向きを保つローレンツ変換では行列式は $+1$、向きを反転する変換では $-1$ となり、後者では負号が一つ加わる。従って向きを保つ変換だけでは真・擬の違いは現れない。
+
+このような量を擬テンソルと呼ぶ。この式は $\Lambda^{\mathsf T}g\Lambda=g$ を満たすローレンツ変換に対するもので、このとき $|\det\Lambda|=1$ である。一般の線形座標変換では行列式の大きさと密度の重みも関係するため、符号だけの補正は適用できない。
+
+\keepheading\subsection{縮約と行列式による表示}
+
+縮約とは、上付き添字と下付き添字を組にして和をとる操作であり、一組ごとに自由添字が二つ減る。以下では $\delta$ と $\varepsilon$ の縮約を計算し、二つの $\varepsilon$ の積を $\delta$ の組合せで表す。最も簡単な例として、単位テンソルの対角成分は四つとも1なので、そのトレースは4である。対称な計量と反対称記号の二つの添字を縮約すると、ダミー添字の交換で符号は反転するが和の値は変わらないため、結果は零となる。
+
+\begin{equation}\label{simple-contract}
+\delta^i{}_i=4,\qquad g_{ij}\varepsilon^{ijkl}=0.
+\end{equation}
+二つの $\varepsilon$ の積は真のテンソルである。上下二組の添字についてそれぞれ完全反対称なので、クロネッカーの記号からなる行列式で表せる。
+
+\begin{equation}\label{epsilon-determinant}
+\varepsilon^{ijkl}\varepsilon_{abcd}=-\begin{vmatrix}\delta^i{}_a&\delta^i{}_b&\delta^i{}_c&\delta^i{}_d\\\delta^j{}_a&\delta^j{}_b&\delta^j{}_c&\delta^j{}_d\\\delta^k{}_a&\delta^k{}_b&\delta^k{}_c&\delta^k{}_d\\\delta^l{}_a&\delta^l{}_b&\delta^l{}_c&\delta^l{}_d\end{vmatrix}.
+\end{equation}
+添字を固定すると両辺は $0,\pm1$ をとり、二行または二列の交換で符号が変わる。全体の負号は $\varepsilon^{0123}\varepsilon_{0123}=-1$ で確認でき、採用した計量の符号に由来する。順に縮約すると次を得る。
+
+\begin{equation}\label{epsilon-one}
+\varepsilon^{ijkl}\varepsilon_{abcl}=-\begin{vmatrix}\delta^i{}_a&\delta^i{}_b&\delta^i{}_c\\\delta^j{}_a&\delta^j{}_b&\delta^j{}_c\\\delta^k{}_a&\delta^k{}_b&\delta^k{}_c\end{vmatrix}.
+\end{equation}
+\begin{equation}\label{epsilon-two}
+\varepsilon^{ijkl}\varepsilon_{abkl}=-2(\delta^i{}_a\delta^j{}_b-\delta^i{}_b\delta^j{}_a).
+\end{equation}
+\begin{equation}\label{epsilon-three}
+\varepsilon^{ijkl}\varepsilon_{ajkl}=-6\delta^i{}_a.
+\end{equation}
+\begin{equation}\label{epsilon-four}
+\varepsilon^{ijkl}\varepsilon_{ijkl}=-24.
+\end{equation}
+
+係数の階乗は零でない置換の数を数えている。二つの添字を縮約すると二通りの順序がまとまって $2!$、三つなら $3!$、完全縮約では $4!=24$ 項となる。一方が上付き、他方が下付きであるため、完全に対応する各項には同じ負号が付き、結果は $-24$ である。三次元ユークリッド空間の符号をそのまま使ってはならない。
+
+\keepheading\subsection{双対と成分計算}
+
+次に $\varepsilon$ を使って反対称テンソルの双対を定義する。先の積の公式では、二つの $\varepsilon$ の積によって、複数の $\delta$ の積からなる交代和を簡潔に表した。ここでは一つの $\varepsilon$ を反対称テンソルと縮約し、ある添字組の成分を相補的な添字組の成分へ写す。同じ完全反対称記号を使うが、構成する式の役割は異なる。四次元の2階反対称テンソルには六つの独立成分があり、各添字対には相補的な添字対があるため、双対も2階反対称な対象となる。$A^{ij}=-A^{ji}$ に対して次のように定義する。
+
+\begin{definitionBox}{2階反対称テンソルの双対}
+\begin{equation}\label{dual-two}
+(*A)^{ij}=\frac12\varepsilon^{ijkl}A_{kl}.
+\end{equation}
+\end{definitionBox}
+
+係数 $1/2$ は $(k,l)$ と $(l,k)$ の二重計数を除く。添字を交換すると $A_{kl}$ と $\varepsilon^{ijkl}$ は両方とも符号を変えるため、その積は変わらない。両方の順序について和をとると同じ独立成分を二度数えるのである。一成分を展開すれば係数と符号を直接確認できる。
+
+$01$ 成分には $23$ と $32$ の二項だけが寄与する。
+
+\begin{equation}\label{dual-example}
+\begin{aligned}(*A)^{01}&=\tfrac12(\varepsilon^{0123}A_{23}+\varepsilon^{0132}A_{32})\\&=\tfrac12(A_{23}-A_{32})=A_{23}.\end{aligned}
+\end{equation}
+従って、独立な成分はすべて次のように書ける。
+
+\begin{resultBox}{2階反対称テンソルの双対成分}
+\begin{equation}\label{dual-components}
+\begin{gathered}(*A)^{01}=A_{23},\quad (*A)^{02}=A_{31},\quad (*A)^{03}=A_{12},\\(*A)^{12}=A_{03},\quad (*A)^{13}=-A_{02},\quad (*A)^{23}=A_{01}.\end{gathered}
+\end{equation}
+\end{resultBox}
+四元ベクトルは、3階完全反対称擬テンソルに双対化できる。
+
+\begin{definitionBox}{四元ベクトルの双対}
+\begin{equation}\label{dual-three}
+(*A)^{ijk}=\varepsilon^{ijkl}A_l.
+\end{equation}
+\end{definitionBox}
+
+\begin{resultBox}{四元ベクトルの双対成分}
+\begin{equation}\label{dual-vector}
+\begin{gathered}(*A)^{012}=A_3,\quad (*A)^{013}=-A_2,\\(*A)^{023}=A_1,\quad (*A)^{123}=-A_0.\end{gathered}
+\end{equation}
+\end{resultBox}
+
+四元ベクトルは四成分をもち、3階完全反対称な対象にも、欠けている添字で区別できる四つの独立成分がある。従ってこの対応で独立な情報は失われない。双対には擬の完全反対称記号が一つ入るため、真のベクトルやテンソルの双対は擬の性質を帯びる。これは次に擬スカラーが現れることとも整合する。
+
+次に2階テンソルとその双対を縮約する。$\varepsilon$ を一つ含むため、結果は擬スカラーとなる。
+
+\begin{definitionBox}{反対称テンソルとその双対の縮約}
+\begin{equation}\label{pseudoscalar}
+P=A^{ij}(*A)_{ij}=\frac12\varepsilon_{ijkl}A^{ij}A^{kl}.
+\end{equation}
+\end{definitionBox}
+零でない項は相補的な添字対 $(01,23)$、$(02,13)$、$(03,12)$ の三組に分かれる。最初の組の八項は次のとおりである。
+
+\begin{equation}\label{eight-terms}
+\begin{aligned}S_{01|23}={}&\varepsilon_{0123}A^{01}A^{23}+\varepsilon_{0132}A^{01}A^{32}\\&+\varepsilon_{1023}A^{10}A^{23}+\varepsilon_{1032}A^{10}A^{32}\\&+\varepsilon_{2301}A^{23}A^{01}+\varepsilon_{2310}A^{23}A^{10}\\&+\varepsilon_{3201}A^{32}A^{01}+\varepsilon_{3210}A^{32}A^{10}.\end{aligned}
+\end{equation}
+$A$ と $\varepsilon$ の反対称性により、八項はそれぞれ $-A^{01}A^{23}$ に等しい。残りの二組も同様に整理し、式\eqref{pseudoscalar}の係数 $1/2$ を入れると次を得る。
+
+\begin{resultBox}{擬スカラーの計算結果}
+\begin{equation}\label{pseudoscalar-result}
+P=-4\bigl(A^{01}A^{23}-A^{02}A^{13}+A^{03}A^{12}\bigr).
+\end{equation}
+\end{resultBox}
+
+括弧内の三項は三種類の相補的な組に対応し、相対的な符号は添字置換の偶奇で定まる。各組の八項に定義の $1/2$ を掛けることで、全体の係数4が得られる。この整理は項の見落としを防ぎ、一つの代表項だけから完全縮約の値を書けない理由も示している。
+
+\keepheading\section{三次元直交座標における極性・軸性ベクトル}
+
+四次元の双対は、相補的な添字によって反対称成分を整理する操作であった。その意味を身近な空間の図像と結び付けるため、三次元ユークリッド空間を考える。直交デカルト座標では計量は単位行列であり、共変成分と反変成分の数値が等しいので、空間添字を下付きで統一できる。この便利さをミンコフスキー時空の四次元添字にそのまま適用することはできない。
+
+\begin{equation}\label{euclidean}
+g_{\alpha\beta}=\delta_{\alpha\beta},\qquad(g_{\alpha\beta})=\operatorname{diag}(1,1,1),\qquad\epsilon_{123}=1.
+\end{equation}
+三次元の $\epsilon_{\alpha\beta\gamma}$ も完全反対称である。直交座標変換の下で $\delta$ は真のテンソル、数値規約を固定した $\epsilon$ は擬テンソルとなり、前節と同じ方法で判定できる。三次元の双対は0階と3階、1階と2階の反対称テンソルを対応させる。
+
+\begin{equation}\label{dual-three-space}
+(*A)_{\alpha\beta}=\epsilon_{\alpha\beta\gamma}A_\gamma,\qquad *\Omega=\frac1{3!}\epsilon_{\alpha\beta\gamma}\Omega_{\alpha\beta\gamma}.
+\end{equation}
+
+三次元ベクトルには三つの独立成分があり、2階反対称テンソルも $A_{23},A_{31},A_{12}$ を独立成分として選べるため、一対一に対応する。3階完全反対称テンソルの独立成分は一つだけなので、スカラーまたは擬スカラーで表せる。双対の真・擬の性質は元の対象にも依存するが、一つの $\epsilon$ に由来する向きの因子は常に保持する必要がある。
+
+以下ではベクトルと2階反対称テンソルに注目する。$R\in O(3)$ に対して、極性ベクトル $\boldsymbol p$ と軸性ベクトル $\boldsymbol a$ はそれぞれ次に従う。
+
+\begin{equation}\label{polar-axial}
+\boldsymbol p'=R\boldsymbol p,\qquad\boldsymbol a'=(\det R)R\boldsymbol a.
+\end{equation}
+
+$\det R=+1$ では両者の変換は同じなので、通常の空間回転だけでは区別できない。向きを反転する変換で初めて、軸性ベクトルの追加の行列式符号が現れる。三成分をもつことだけでは種類は決まらず、その由来と完全な変換則を調べる必要がある。
+
+特に空間全体の反転 $R=-I$ では、極性ベクトルは符号を変え、軸性ベクトルは変わらない。この不変性は全反転に対するもので、一般の鏡映が軸性ベクトルの全成分を保つわけではない。二つの極性ベクトルの外積は軸性ベクトルであり、2階反対称テンソルの双対として理解できる。
+
+\begin{equation}\label{cross}
+\begin{gathered}\boldsymbol C=\boldsymbol A\times\boldsymbol B,\qquad C_{\beta\gamma}=A_\beta B_\gamma-A_\gamma B_\beta,\\C_\alpha=\frac12\epsilon_{\alpha\beta\gamma}C_{\beta\gamma}.\end{gathered}
+\end{equation}
+
+まず反対称な組合せを作り、次に $\epsilon$ で双対をとると外積が再現される。これは行列式の計算手順だけでなく、外積が軸性ベクトルになる理由を説明する。同じ構成を四次元テンソルの純空間成分に適用すると、三次元軸性ベクトルにまとめられる。
+
+この三次元の双対を用いると、四次元の2階反対称テンソルは一対の三次元量 $(\boldsymbol p,\boldsymbol a)$ で表せる。
+
+\begin{equation}\label{antisymmetric-matrix}
+(A^{ij})=\begin{pmatrix}0&p_x&p_y&p_z\\-p_x&0&-a_z&a_y\\-p_y&a_z&0&-a_x\\-p_z&-a_y&a_x&0\end{pmatrix}.
+\end{equation}
+\begin{equation}\label{matrix-components}
+p_\alpha=A^{0\alpha},\qquad A^{\alpha\beta}=-\epsilon_{\alpha\beta\gamma}a_\gamma,\qquad a_\gamma=-\frac12\epsilon_{\gamma\alpha\beta}A^{\alpha\beta}.
+\end{equation}
+
+六つの独立成分は、時間と空間の混合成分 $A^{01},A^{02},A^{03}$ と、空間成分 $A^{23},A^{31},A^{12}$ の二組に分かれる。従って $(\boldsymbol p,\boldsymbol a)$ は一つの反対称テンソルの成分を整理したもので、独立した二つの四元ベクトルではない。この整理は時間と空間の分け方に依存する。
+
+純粋な空間直交変換では $\boldsymbol p$ は極性、$\boldsymbol a$ は軸性ベクトルであるが、一般のローレンツ・ブーストは両者を混合する。四次元の添字を二つ下げると時間と空間の混合成分だけが符号を変えるため、この行列規約では $A_{ij}=(-\boldsymbol p,\boldsymbol a)$ と略記できる。
+
+\keepheading\section{テンソル解析の初歩}
+
+\keepheading\subsection{スカラー関数の微分}
+
+これまでは一点におけるテンソル成分の代数を扱った。成分が時空の位置によって変わるときには微分と積分が必要になる。最も簡単な出発点は滑らかなスカラー関数 $\varphi$ である。偏微分は座標に依存するが、同じ微小変位に沿う全変化 $d\varphi$ は不変でなければならない。そのため全微分は共変成分と反変な変位の縮約として書かれる。
+
+\begin{equation}\label{differential}
+\begin{gathered}d\varphi=\partial_i\varphi\,dx^i,\qquad\partial_i\varphi=\frac{\partial\varphi}{\partial x^i},\\(\partial_i\varphi)=\left(\frac1c\frac{\partial\varphi}{\partial t},\boldsymbol\nabla\varphi\right),\qquad(dx^i)=(c\,dt,dx,dy,dz).\end{gathered}
+\end{equation}
+
+添字の位置は連鎖律からも分かる。座標変位は $\Lambda$ で変換し、偏微分の係数は逆行列で変換するため、縮約で座標変換が相殺される。時間微分の $1/c$ は $x^0=ct$ に由来し、空間成分は通常の三次元勾配である。これによって四つの微分成分の次元がそろう。
+
+従って $\partial_i\varphi$ は共変成分である。勾配を微分の計量双対ベクトルとして定義する場合、その反変成分は次式となる。両者を添字の位置で区別する。
+
+\begin{equation}\label{raised-gradient}
+(\partial^i\varphi)=g^{ij}\partial_j\varphi=\left(\frac1c\frac{\partial\varphi}{\partial t},-\boldsymbol\nabla\varphi\right).
+\end{equation}
+\keepheading\subsection{四種類の積分要素}
+
+微分に現れた変位 $dx^i$ は、曲線上の積分要素でもある。積分領域が二次元曲面、三次元超曲面、四次元領域になると、それぞれより多くの独立な接線素から積分要素を作る必要がある。このため時空の積分は自然に四種類に分かれる。以下の $dx_{(1)}^i,dx_{(2)}^i,dx_{(3)}^i$ は異なる接線素を表し、括弧内の数字は識別用のラベルであって和をとる添字ではない。
+
+二次元曲面の向き付き面素は二つの接線素から作られ、2階反対称テンソルとなる。
+
+\begin{equation}\label{area}
+df^{ij}=dx_{(1)}^i dx_{(2)}^j-dx_{(1)}^j dx_{(2)}^i.
+\end{equation}
+
+二つの接線素を交換すると小さな平行四辺形の向きが反転するため、面素は反対称である。$df^{ij}$ はその向き付き小面積を座標平面 $x^ix^j$ に射影した成分と理解でき、面積の大きさと向きの情報を同時に保持する。
+
+三次元超曲面の積分要素は三つの接線素から作られ、三つの添字について完全反対称である。
+
+\begin{equation}\label{hypersurface}
+dS^{ijk}=\begin{vmatrix}dx_{(1)}^i&dx_{(2)}^i&dx_{(3)}^i\\dx_{(1)}^j&dx_{(2)}^j&dx_{(3)}^j\\dx_{(1)}^k&dx_{(2)}^k&dx_{(3)}^k\end{vmatrix}.
+\end{equation}
+
+ここでの超曲面は四次元時空内の三次元積分領域であり、四次元体積ではない。行列式は接線素の交換による向きの反転を表し、三つの接線素が線形従属なら零となる。三つの自由添字は、異なる三次元座標超平面への射影を指定する。
+
+四次元領域の積分には体積要素を用いる。
+
+\begin{equation}\label{volume}
+d\Omega=dx^0dx^1dx^2dx^3=c\,dt\,dx\,dy\,dz=c\,dt\,dV.
+\end{equation}
+ここで $d\Omega$ は四次元の小領域の体積要素を表し、$c\,dt$ は時間方向の長さ、$dV=dx\,dy\,dz$ は三次元空間の体積要素である。体積の大きさだけを扱うときは積の絶対値をとる。ローレンツ変換では $|\det\Lambda|=1$ なので、同じ小領域の四次元体積の大きさは変わらない。座標軸の並びの向きまで記録する場合、二つの軸の順序を交換すると向き付き体積要素の符号が変わる。その向きを保つローレンツ変換では $d\Omega$ 自体が不変である。
+
+\keepheading\subsection{面素と超曲面素の双対}
+
+反対称な面素の成分は小さな面の向きを記録する。双対表示を使うとその意味を捉えやすくなるが、双対の階数は空間の次元に依存する。三次元では添字対の補集合に添字が一つだけ残るため、面素の双対はベクトルとなる。四次元では添字が二つ残るため、双対も2階反対称テンソルである。
+
+\begin{equation}\label{dual-area}
+df^{*ij}=\frac12\varepsilon^{ijkl}df_{kl}.
+\end{equation}
+非退化な接平面では、双対は一本の法線ベクトルではなく、元の接平面に直交する二次元平面を表す。分解可能な面素は $df^{*ij}df_{ij}=0$ を満たす。光的な平面では直交補空間が元の平面と交わりうるため、区別が必要である。
+
+3階の超曲面素は、四次元の法線ベクトルの形をもつ面素に双対化できる。本稿の符号規約では次となる。
+
+\begin{equation}\label{dual-hypersurface}
+dS^i=-\frac1{3!}\varepsilon^{ijkl}dS_{jkl},\qquad dS_{jkl}=\varepsilon_{ijkl}dS^i.
+\end{equation}
+
+四次元の3階完全反対称な超曲面素には四つの独立成分があるため、四成分の対象で表せる。$dS^i$ のベクトルという形は変換則と法線方向を指すだけで、積分領域が曲線になるわけではない。係数 $1/3!$ は縮約する三つの添字の重複を除き、全体の負号は $\varepsilon$ と計量の規約で定まる。
+
+例えば $dS^0=dS^{123}$、$dS^1=dS^{023}$ である。$x^0$ が一定の超平面上では $dS^0=dx\,dy\,dz$ となる。非退化な超曲面では法線の意味をもつが、依然として三次元の積分要素であり、曲線の接線素ではない。
+
+\keepheading\subsection{四次元積分の成分による変換公式}
+
+線素、面素、超曲面素を定義したので、境界の積分と内部の積分を関係付けられる。以下では閉じた超曲面、閉じた二次元曲面、閉曲線の順に、参考文献の成分公式\cite{landau-fields}を用いる。領域と境界の向きを整合させ、場は十分滑らかとする。積分要素の置換の矢印は、積分内で要素を置き換えると同時に微分演算子を作用させる指示であり、局所的な要素同士の等式ではない。ほかに自由添字がある場合はそのまま残し、各成分に同じ公式を適用する。
+
+\keepheading\textbf{閉じた超曲面と四次元領域。} 四次元領域 $\mathcal V$ の閉じた境界超曲面を $\partial\mathcal V$ とする。$dS_i$ を $d\Omega\,\partial_i$ で置き換えると、四次元のガウスの公式を得る。
+\begin{equation}\label{gauss-four}
+\begin{gathered}
+dS_i\ \longrightarrow\ d\Omega\,\frac{\partial}{\partial x^i},\\
+\oint_{\partial\mathcal V} A^i\,dS_i
+=\int_{\mathcal V}\frac{\partial A^i}{\partial x^i}\,d\Omega.
+\end{gathered}
+\end{equation}
+
+左辺は閉じた境界での法線成分を足し合わせ、右辺は内部の発散を足し合わせる。これは三次元のガウスの公式と同じ、全流束と内部の源の総和を結び付ける構造である。四次元では領域と添字の次元が変わるが、境界と内部の対応は変わらない。
+
+\keepheading\textbf{閉じた二次元曲面と超曲面。} 三次元超曲面 $\mathcal H$ の境界 $\partial\mathcal H$ を閉じた二次元曲面とする。2階反対称テンソル $A^{ik}=-A^{ki}$ について、面素の置換と積分公式は次となる。
+\begin{equation}\label{surface-hypersurface}
+\begin{gathered}
+df^*_{ik}\ \longrightarrow\ dS_i\frac{\partial}{\partial x^k}-dS_k\frac{\partial}{\partial x^i},\\
+\begin{aligned}
+\frac12\oint_{\partial\mathcal H}A^{ik}\,df^*_{ik}
+&=\frac12\int_{\mathcal H}\left(dS_i\frac{\partial A^{ik}}{\partial x^k}-dS_k\frac{\partial A^{ik}}{\partial x^i}\right)\\
+&=\int_{\mathcal H}dS_i\frac{\partial A^{ik}}{\partial x^k}.
+\end{aligned}
+\end{gathered}
+\end{equation}
+
+$1/2$ は反対称な添字対 $(i,k)$ と $(k,i)$ の二重計数を防ぐ。二次元境界で双対面素 $df^*_{ik}$ を使うことで、内部の超曲面素 $dS_i$ と対応し、縮約の形がそろう。向きを一度選んだら両辺で整合させ、一方だけ面素の符号を変えてはならない。
+
+最後の段階では $A^{ik}$ の反対称性とダミー添字の交換によって二項が等しくなり、係数 $1/2$ が消える。
+
+\keepheading\textbf{閉曲線と二次元曲面。} 二次元曲面 $\Sigma$ の閉じた境界曲線を $\partial\Sigma$ とする。共変ベクトル $A_i$ について、$dx^i$ を $df^{ki}\partial_k$ に置き換えると、四次元表示のストークスの公式を得る。
+\begin{equation}\label{stokes-components}
+\begin{gathered}
+dx^i\ \longrightarrow\ df^{ki}\frac{\partial}{\partial x^k},\\
+\begin{aligned}
+\oint_{\partial\Sigma}A_i\,dx^i
+&=\int_\Sigma df^{ki}\frac{\partial A_i}{\partial x^k}\\
+&=-\frac12\int_\Sigma df^{ki}\left(\frac{\partial A_k}{\partial x^i}-\frac{\partial A_i}{\partial x^k}\right).
+\end{aligned}
+\end{gathered}
+\end{equation}
+
+左辺は閉じた境界に沿う循環であり、右辺はそれが面内の反対称な微分によって定まることを示す。$i,k$ を交換すると面素が符号を変えるため、微分の対称部分は相殺される。係数 $1/2$ と最後の負号も、この添字の順序とともに決まる。
+
+$df^{ki}=-df^{ik}$ なので、$\partial_k A_i$ の反対称部分だけが積分に寄与する。以上の三つの関係では前節の面素と超曲面素の定義を保ち、添字の縮約で直接表している。
+
+\clubpenalty=10000\widowpenalty=10000\keepheading\section{相対論的運動学}
+テンソル解析は粒子の運動に直接応用できる。粒子が経験する事象の列は時空内の世界線をなす。その接線を四元ベクトルとして変換させるには、特定の慣性系の座標時刻ではなく、各慣性系が共通に認めるパラメーターで微分する。未来向きの滑らかな時間的世界線で $v=|\boldsymbol v|<c$ とすると、固有時 $\tau$ または間隔パラメーター $s=c\tau$ を使って四元速度と四元加速度を定義できる\cite{landau-fields}。符号規約 $(+---)$、$x^i=(ct,\boldsymbol x)$ を保ち、$ds=c\,d\tau>0$ とする。
+
+まず四次元座標の間隔に関する微分によって四元速度を定義する。$ds=c\sqrt{1-v^2/c^2}\,dt$ より、順に次を得る。
+
+\begin{definitionBox}{四元速度の定義}
+\begin{equation}\label{four-velocity}
+\begin{aligned}u^i=\frac{dx^i}{ds}&=\frac{1}{c\sqrt{1-v^2/c^2}}\left(\frac{d(ct)}{dt},\frac{d\boldsymbol x}{dt}\right)\\&=\frac{1}{c\sqrt{1-v^2/c^2}}(c,\boldsymbol v)\\&=\gamma\left(1,\frac{\boldsymbol v}{c}\right),\qquad\gamma=\frac1{\sqrt{1-v^2/c^2}}.\end{aligned}
+\end{equation}
+\end{definitionBox}
+
+四元速度は世界線の接線だが、その空間部分は通常の三次元速度ではなく $\gamma\boldsymbol v/c$ である。違いは微分のパラメーターに由来し、座標時間と固有時間には係数 $\gamma$ の差がある。時間成分 $u^0=\gamma$ と空間成分を合わせて初めて、ローレンツ変換に従う一つの対象となる。
+
+ここでは原書の無次元の定義 $u^i=dx^i/ds$ を用いる。固有時で微分する規約 $U^i=dx^i/d\tau$ では $U^i=c\,u^i$ となるため、二つの規約を区別する。
+
+次にラピディティーを導入する。$\boldsymbol v=v\widehat{\boldsymbol n}$、$\widehat{\boldsymbol n}\cdot\widehat{\boldsymbol n}=1$ と書く。定義より次が得られる。
+
+\begin{equation}\label{rapidity-identities}
+\begin{gathered}\tanh\eta=\frac vc,\qquad\cosh\eta=\frac1{\sqrt{1-v^2/c^2}}=\gamma,\\\sinh\eta=\frac vc\cosh\eta,\qquad v\cosh\eta=c\sinh\eta.\end{gathered}
+\end{equation}
+\begin{equation}\label{velocity-rapidity}
+u^i=\frac{\cosh\eta}{c}(c,v\widehat{\boldsymbol n})=(\cosh\eta,\sinh\eta\,\widehat{\boldsymbol n}).
+\end{equation}
+瞬間的な静止点 $v=0$ では速度方向が一意でなくても、$u^i=(1,\boldsymbol 0)$ は定まる。双曲線関数の恒等式により、四元速度はミンコフスキー計量に関する単位時間的ベクトルとなる。
+
+\begin{equation}\label{velocity-unit-rapidity}
+u^iu_i=\cosh^2\eta-\sinh^2\eta\,(\widehat{\boldsymbol n}\cdot\widehat{\boldsymbol n})=1.
+\end{equation}
+同じ結論はラピディティー表示を使わず、線素の内積から直接得られる。
+
+\begin{resultBox}{四元速度の規格化}
+\begin{equation}\label{velocity-unit-interval}
+dx^i dx_i=ds^2\quad\Longrightarrow\quad u^iu_i=\frac{dx^i}{ds}\frac{dx_i}{ds}=1.
+\end{equation}
+\end{resultBox}
+
+以上の二つの計算は、どちらも四元速度が $u^iu_i=1$ を満たすことを示している。ラピディティーの計算では $u^i=(\cosh\eta,\sinh\eta\,\widehat{\boldsymbol n})$ をミンコフスキー内積に代入し、双曲線関数の恒等式を使う。間隔の計算では、同じ内積に定義 $u^i=dx^i/ds$ を代入し、$dx^idx_i=ds^2$ を使う。
+
+さらに四元速度を間隔で微分し、四元加速度 $w^i$ を定義する。以下のラピディティーによる成分表示は、方向 $\widehat{\boldsymbol n}$ が一定の直線運動を仮定している。以下ではこの条件の下で計算し、$\kappa=d\eta/ds=(1/c)\,d\eta/d\tau$ とおく。
+
+\begin{definitionBox}{四元加速度（運動方向一定）}
+\begin{equation}\label{four-acceleration}
+\begin{aligned}w^i=\frac{d^2x^i}{ds^2}=\frac{du^i}{ds}&=\frac1c\frac{d\eta}{d\tau}(\sinh\eta,\cosh\eta\,\widehat{\boldsymbol n})\\&=\kappa(\sinh\eta,\cosh\eta\,\widehat{\boldsymbol n}).\end{aligned}
+\end{equation}
+\end{definitionBox}
+$\kappa$ の次元は長さの逆数である。$\kappa$ は間隔に対するラピディティーの変化率であり、通常の三次元加速度とは区別する。運動方向が変わる場合、式\eqref{velocity-rapidity}の微分には方向の微分項も現れるため、上の方向一定の成分表示はそのまま使えない。
+
+\keepheading 最後に直交性を確かめる。四元速度のノルムは常に1であり、現在の慣性座標では計量は定数なので、次が成り立つ。
+
+\begin{resultBox}{四元速度と四元加速度の直交性}
+\begin{equation}\label{velocity-acceleration-orthogonal}
+\frac{d}{ds}(u^iu_i)=2w^iu_i=0\quad\Longrightarrow\quad w^iu_i=0.
+\end{equation}
+\end{resultBox}
+
+この微分では、四元速度の規格化恒等式 $u^iu_i=1$ と、現在の慣性座標で計量が定数であることを使う。$u^iu_i$ の二つの因子をそれぞれ微分すると、計量の対称性によって二項がまとまり、係数2を得る。$u_iw^i=0$ は、四元速度 $u^i$ と四元加速度 $w^i$ のミンコフスキー内積が零であることを明示する。四元加速度は世界線に沿う四元速度の変化を表す。その変化は $u^iu_i=1$ を保たなければならないため、四元速度自身に沿う成分をもたない。
+
+\keepheading この結論は一般の滑らかな時間的運動に成立し、方向一定の仮定は不要である。上の直線運動ではラピディティー表示からも直接確認できる。
+
+\begin{equation}\label{orthogonality-rapidity}
+\begin{aligned}w^iu_i&=\kappa\bigl[\sinh\eta\cosh\eta-\cosh\eta\sinh\eta\,(\widehat{\boldsymbol n}\cdot\widehat{\boldsymbol n})\bigr]\\&=0.\end{aligned}
+\end{equation}
+\begin{resultBox}{運動学のまとめ：変位・速度・加速度の種類}
+質量をもつ粒子の滑らかな時間的世界線では、零でない接線方向の変位、四元速度、四元加速度について次が成り立つ。
+\begin{itemize}
+\setlength{\itemsep}{2pt}\setlength{\parsep}{0pt}
+\item 接線方向の変位 $dx^i$ は時間的：$dx^idx_i=ds^2>0$。
+\item 四元速度 $u^i$ は時間的：$u^iu_i=1>0$。
+\item 零でない四元加速度 $w^i$ は空間的：$w^iw_i<0$。加速がなければ $w^i=0$。
+\end{itemize}
+\end{resultBox}
+\par\medskip\noindent\begin{minipage}{\linewidth}
+\begin{thebibliography}{9}
+\bibitem{landau-fields} L. D. Landau, E. M. Lifshitz. {\CJKfontspec{SimSun}『场论』}（第8版、理論物理学教程 第2巻）. 魯欣・任朗・袁炳南訳。北京：高等教育出版社、2012。ISBN 978-7-04-035173-6。第1章第6、7節、提供された書籍写真の16--25頁を参照。
+\end{thebibliography}
+\par\medskip{\small フィードバックには版、節、式番号を記載する。本稿は未公開で、受付先は未設定である。オリジナルの整理内容は CC BY 4.0 とし、引用資料の権利は元の権利者に帰属する。公開著者名は未指定である。再利用時には題名、版、ライセンスへのリンクを保持し、変更を明示する。\par\texttt{\licenseurl}}
+\end{minipage}
+\end{document}

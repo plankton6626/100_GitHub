@@ -1,0 +1,557 @@
+% Compile: xelatex -interaction=nonstopmode -halt-on-error FILE.tex (run twice).
+% Dependencies: xeCJK, amsmath, amssymb, indentfirst, xcolor, tcolorbox, tikz, hyperref.
+% Japanese fonts: Yu Mincho / Yu Gothic; replace with open CJK fonts when needed.
+% Set Chinese: \chinesetrue; English: \englishtrue; Japanese: both false.
+% Render separate _zh, _en and _ja files with identical semantic labels.
+% Chinese fonts: SimSun/SimHei or Noto CJK SC. English uses Latin fonts only.
+% Small bibliographies: thebibliography + bibitem + cite; run XeLaTeX twice.
+\documentclass[a4paper,12pt]{article}
+\usepackage{fontspec}
+\newif\ifchinese
+\chinesefalse
+\newif\ifenglish
+\englishtrue
+\usepackage{amsmath,amssymb}
+\usepackage{indentfirst}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\definecolor{Lime}{HTML}{FFEA00}
+\definecolor{Spring}{HTML}{BFEF40}
+\definecolor{Mint}{HTML}{80F580}
+\definecolor{Aqua}{HTML}{40FABF}
+\definecolor{Cyan}{HTML}{00FFFF}
+\colorlet{Ink}{Mint!20!black}
+\colorlet{SubInk}{Aqua!23!black}
+\colorlet{MutedInk}{Cyan!22!black}
+
+\setlength{\textwidth}{\dimexpr\paperwidth-50mm\relax}
+\setlength{\textheight}{\dimexpr\paperheight-50mm\relax}
+\setlength{\oddsidemargin}{\dimexpr25mm-1in\relax}
+\setlength{\evensidemargin}{\oddsidemargin}
+\setlength{\topmargin}{\dimexpr25mm-1in\relax}
+\setlength{\headheight}{0pt}
+\setlength{\headsep}{0pt}
+\setlength{\footskip}{12mm}
+\setlength{\parindent}{1em}
+\setlength{\parskip}{2pt}
+\linespread{1.06}
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{\z@}
+  {-1.1em \@plus -0.2em \@minus -0.1em}{0.45em}
+  {\normalfont\sffamily\normalsize\bfseries\color{Ink}}}
+\renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}
+  {-0.9em \@plus -0.2em \@minus -0.1em}{0.35em}
+  {\normalfont\sffamily\normalsize\bfseries\color{SubInk}}}
+\def\ps@study{%
+  \def\@oddhead{}\def\@evenhead{}%
+  \def\@oddfoot{\hfil{\sffamily\small\color{MutedInk}\thepage}\hfil}%
+  \let\@evenfoot\@oddfoot}
+\makeatother
+\pagestyle{study}
+
+\newcommand{\compactmath}{%
+  \setlength{\abovedisplayskip}{3pt plus 1pt minus 1pt}%
+  \setlength{\belowdisplayskip}{3pt plus 1pt minus 1pt}%
+  \setlength{\abovedisplayshortskip}{2pt plus 1pt}%
+  \setlength{\belowdisplayshortskip}{2pt plus 1pt}%
+  \setlength{\jot}{2pt}}
+\AtBeginDocument{\compactmath\setlength{\parindent}{1em}}
+\newsavebox{\displaymeasure}
+% Optional: keep ordinary formulas in one line when they fit the current width.
+\newcommand{\fitmath}[2]{%
+  \compactmath
+  \sbox{\displaymeasure}{$\displaystyle #1$}%
+  \ifdim\wd\displaymeasure>\linewidth
+    \[\begin{gathered}#2\end{gathered}\]%
+  \else
+    \[#1\]%
+  \fi
+  \par}
+
+\tcbset{studybox/.style={
+  sharp corners,boxrule=0.7pt,leftrule=1.4pt,
+  left=2.5mm,right=2.5mm,top=1.5mm,bottom=1.5mm,
+  before skip=8pt,after skip=8pt,
+  fonttitle=\sffamily\bfseries\small,coltitle=Ink,
+  fontupper=\normalsize,colupper=black,
+  before upper={\compactmath\setlength{\parindent}{1em}}
+}}
+\newtcolorbox{definitionBox}[1]{studybox,
+  colback=Lime!10!white,colframe=Lime!42!black,coltitle=Lime!30!black,
+  colbacktitle=Lime!28!white,title={#1}}
+\newtcolorbox{resultBox}[1]{studybox,
+  colback=Cyan!8!white,colframe=Cyan!38!black,coltitle=Cyan!25!black,
+  colbacktitle=Cyan!28!white,title={#1}}
+\newtcolorbox{explanationBox}[1]{studybox,
+  colback=Cyan!8!white,colframe=Aqua!35!black,
+  colbacktitle=Cyan!24!white,title={#1}}
+
+
+\usepackage{tikz}
+\IfFileExists{kvsetkeys.sty}{\usepackage{hyperref}}{%
+  \newcommand{\hypersetup}[1]{}}
+\hypersetup{unicode=true,colorlinks=true,linkcolor=Ink,urlcolor=SubInk,
+  pdfauthor={},pdfsubject={Independent study notes},pdfcreator={XeLaTeX}}
+\setcounter{tocdepth}{1}
+\ifchinese
+  \renewcommand{\contentsname}{目录}
+  \renewcommand{\refname}{参考文献}
+  \newcommand{\notetitle}{学习笔记}
+  \newcommand{\notemetadata}{版本：0.7\quad 日期：2026-10-20\quad 许可：CC BY 4.0}
+  \newcommand{\licensetext}{除另有说明的第三方材料外，原创内容采用 CC BY 4.0。再利用须适当署名、提供许可链接并说明修改。公开署名暂留白。}
+\else\ifenglish
+  \renewcommand{\contentsname}{Contents}
+  \renewcommand{\refname}{References}
+  \newcommand{\notetitle}{Study Notes}
+  \newcommand{\notemetadata}{Version: 0.7\quad Date: 2026-10-20\quad License: CC BY 4.0}
+  \newcommand{\licensetext}{Except for separately identified third-party material, original content is licensed under CC BY 4.0. Reuse requires appropriate attribution, a license link and an indication of changes. The public author name is currently unspecified.}
+\else
+  \renewcommand{\contentsname}{目次}
+  \renewcommand{\refname}{参考文献}
+  \newcommand{\notetitle}{学習ノート}
+  \newcommand{\notemetadata}{版：0.7\quad 日付：2026-10-20\quad ライセンス：CC BY 4.0}
+  \newcommand{\licensetext}{別途示す第三者の資料を除き、オリジナルの内容は CC BY 4.0 で提供する。再利用時は適切な帰属表示、ライセンスへのリンク、変更の明示が必要である。公開著者名は現在未指定である。}
+\fi\fi
+\newcommand{\publicauthor}{}
+\newcommand{\licenseurl}{https://creativecommons.org/licenses/by/4.0/}
+\newcommand{\spectrum}{%
+  \begin{tikzpicture}
+  \shade[left color=Lime,right color=Spring] (0,0) rectangle (4,0.10);
+  \shade[left color=Spring,right color=Mint] (4,0) rectangle (8,0.10);
+  \shade[left color=Mint,right color=Aqua] (8,0) rectangle (12,0.10);
+  \shade[left color=Aqua,right color=Cyan] (12,0) rectangle (16,0.10);
+  \end{tikzpicture}}
+
+\usepackage{textcomp}
+\emergencystretch=2em
+\raggedbottom
+\newdimen\remainingpage
+\newcommand{\keepheading}{\par\begingroup\dimen0=150pt\vskip0pt plus\dimen0\penalty-100\vskip0pt plus-\dimen0\vskip\dimen0\penalty9999\vskip-\dimen0\vskip0pt\endgroup}
+\clubpenalty=10000\widowpenalty=10000
+\begin{document}
+{\Large\sffamily\bfseries\color{Ink} Four-Dimensional Tensors, Duality and Calculus}
+\par\smallskip{\small\notemetadata}\par\smallskip\noindent\spectrum\par\smallskip
+The author supplied handwritten derivations and prose notes; AI assisted with transcription, editing, translation and LaTeX typesetting. This local reading draft awaits the author\textquotesingle s review.
+\tableofcontents\clearpage
+\keepheading\section{Basic definition of tensors}
+
+Tensors provide a way to express physical relations consistently across coordinate systems. Individual components may change when coordinates change, but they must follow a definite transformation law. Starting from that law, we develop the metric, contractions and duality, then apply them to integration and particle motion. Our conventions follow Sections 6 and 7 of Chapter 1 of the reference\cite{landau-fields}. Four-dimensional indices $i,j,k,l$ range over $0,1,2,3$, while spatial indices $\alpha,\beta,\gamma$ range over $1,2,3$. Repeated upper--lower pairs are summed.
+
+Consider an invertible linear coordinate change $x^{\prime i}=\Lambda^i{}_j x^j$. Label a collection of quantities with $r$ upper and $s$ lower indices. Each upper index contributes the transformation matrix $\Lambda$, whereas each lower index contributes its inverse $\Lambda^{-1}$. Indices obeying these respective rules are called \textbf{contravariant} and \textbf{covariant}; the names distinguish the two transformation rules. A collection obeying the complete law below is a mixed tensor of type $(r,s)$ and total rank $r+s$. Retain the relative order of upper and lower indices.
+
+\begin{definitionBox}{Definition of a mixed tensor}
+\begin{equation}\label{tensor-law}
+\begin{aligned}
+(A')^{i_1\cdots i_r}{}_{j_1\cdots j_s}
+={}&\Lambda^{i_1}{}_{a_1}\cdots\Lambda^{i_r}{}_{a_r}\\
+&\mathrel{}\times(\Lambda^{-1})^{b_1}{}_{j_1}\cdots(\Lambda^{-1})^{b_s}{}_{j_s}
+A^{a_1\cdots a_r}{}_{b_1\cdots b_s}.
+\end{aligned}
+\end{equation}
+\end{definitionBox}
+
+The indices $a_1,\ldots,a_r,b_1,\ldots,b_s$ on the right are summed dummy indices, while those on the left identify the transformed component. Inverse matrices accompany lower indices so that pairing an upper and lower index cancels the coordinate transformations. This is the property needed for inner products and contractions. A tensor is therefore identified by its collective transformation law, not merely by the number of entries.
+
+The case $s=0$ is purely contravariant and $r=0$ purely covariant. Type $(0,0)$ is a scalar, type $(1,0)$ a contravariant vector and type $(0,1)$ a covariant vector.
+
+In special relativity, inertial frames are related by Lorentz transformations. One convention for a boost along $x$ is given below, with rapidity $\eta$ defined by $\tanh\eta=v/c$. It corresponds to $x'=\gamma(x-vt)$; the inverse boost has positive off-diagonal entries.
+
+\begin{equation}\label{boost}
+\Lambda=\begin{pmatrix}\cosh\eta&-\sinh\eta&0&0\\-\sinh\eta&\cosh\eta&0&0\\0&0&1&0\\0&0&0&1\end{pmatrix},\qquad \tanh\eta=\frac vc.
+\end{equation}
+
+This matrix mixes time with the spatial direction of motion and leaves the transverse $y,z$ coordinates unchanged. Rapidity expresses the entries through hyperbolic functions, linking interval preservation to $\cosh^2\eta-\sinh^2\eta=1$. The same structure will reappear in the rapidity representation of four-velocity.
+
+\keepheading\section{The Minkowski metric and related calculations}
+
+In special relativity the interval is established through physical reasoning before the metric is identified. The reference discusses relations between events using the relativity principle and the invariance of the speed of light, obtaining the frame-independent interval $ds^2=c^2dt^2-dx^2-dy^2-dz^2$. Writing $x^i=(ct,x,y,z)$ gives the time and space coordinates the same dimension. The coefficients of this already established quadratic expression then identify the Minkowski metric $g_{ij}$, allowing us to rewrite the interval in tensor notation:
+
+\begin{definitionBox}{Metric identified from the interval}
+\begin{equation}\label{metric}
+\begin{gathered}ds^2=c^2dt^2-dx^2-dy^2-dz^2=g_{ij}\,dx^i dx^j,\\(g_{ij})=\operatorname{diag}(1,-1,-1,-1).\end{gathered}
+\end{equation}
+\end{definitionBox}
+The metric contracts tensor indices and defines the inner product of vectors:
+
+\begin{equation}\label{trace}
+g_{ij}A^{ij}=A^i{}_i=A^0{}_0+A^1{}_1+A^2{}_2+A^3{}_3.
+\end{equation}
+
+The metric first lowers one index of $A^{ij}$, after which the repeated upper--lower pair is summed. No free index remains, so the result is a scalar. In fully contravariant components it is $A^{00}-A^{11}-A^{22}-A^{33}$. In the sum of mixed diagonal components, those minus signs have already entered through index lowering.
+
+\begin{equation}\label{inner}
+\begin{gathered}g_{ij}X^iY^j=X^iY_i,\\X^iY_i=X^0Y^0-X^1Y^1-X^2Y^2-X^3Y^3.\end{gathered}
+\end{equation}
+\keepheading\textbf{Definition of the inverse metric.} Let $G=(g_{ij})$ be the matrix of the covariant metric. The inverse-metric components $g^{ij}$ are the entries of $G^{-1}$. Here $G=\operatorname{diag}(1,-1,-1,-1)$, so $G^2=I$ and $G^{-1}=G$. This numerical equality follows from the chosen orthonormal coordinates and signature; upper and lower indices remain distinct. The metric lowers indices and its inverse raises them:
+
+\begin{definitionBox}{Inverse metric and index operations}
+\begin{equation}\label{raise-lower}
+\begin{gathered}
+(g^{ij})=G^{-1}=\operatorname{diag}(1,-1,-1,-1),\\
+g^{ik}g_{kj}=\delta^i{}_j,\qquad g_{ik}g^{kj}=\delta_i{}^j,\\
+A_i=g_{ij}A^j,\qquad A^i=g^{ij}A_j.
+\end{gathered}
+\end{equation}
+\end{definitionBox}
+
+Raising or lowering an index changes the component representation of the same object. With this metric the time component is unchanged and each spatial component reverses sign. Each spatial index raised or lowered contributes one minus sign. For a rank-two tensor, changing two spatial indices cancels the two signs, whereas a time--space entry changes sign once.
+
+The Minkowski metric is indefinite. A nonzero vector is timelike, spacelike or null according as $A^iA_i$ is positive, negative or zero. This distinction underlies the geometric classification of causal relations between events.
+
+\keepheading\section{The symbols $\delta$ and $\varepsilon$}
+
+\subsection{Tensors and pseudotensors}
+
+The metric and index operations allow us to compare component types. Two especially useful objects are the identity tensor $\delta^i{}_j$ and the completely antisymmetric symbol $\varepsilon^{ijkl}$. Both have simple numerical tables in the coordinates used here, but fixed numerical entries do not imply the same transformation properties. We define them in orthonormal inertial coordinates and then test their behavior under reflection.
+
+\begin{definitionBox}{Identity tensor and antisymmetric symbol}
+\begin{equation}\label{symbols}
+\delta^i{}_j=\begin{cases}1&i=j,\\0&i\ne j,\end{cases}\qquad \varepsilon^{0123}=1,\qquad \varepsilon_{0123}=-1.
+\end{equation}
+\end{definitionBox}
+
+The symbol $\delta^i{}_j$ returns each input component unchanged and represents the identity transformation. The symbol $\varepsilon$ records both whether indices are distinct and the orientation of their ordering. If two indices coincide, swapping them leaves the entry unchanged while antisymmetry demands a sign change, forcing zero. Otherwise, the parity of the permutation determines the sign.
+
+The value of $\varepsilon^{ijkl}$ is $+1$ for even permutations of $0123$, $-1$ for odd permutations and zero if any index repeats. Its lower components are obtained by lowering all four indices with the metric.
+
+Consider the reflection $T=\operatorname{diag}(-1,1,1,1)$, for which $T^{-1}=T$. The identity tensor retains its defining components:
+
+\begin{equation}\label{delta-transform}
+(\delta')^i{}_j=T^i{}_k(T^{-1})^l{}_j\delta^k{}_l=\delta^i{}_j.
+\end{equation}
+
+Reflection is a test of tensor versus pseudotensor character, not a replacement for the tensor definition. The upper and lower index factors of $\delta$ are inverse matrices, leaving the identity after cancellation. In fact, this cancellation works for any invertible linear coordinate change.
+
+If $\varepsilon$ were transformed as an ordinary rank-four contravariant tensor, its $0123$ component would become $-1$. Retaining the same numerical convention in the reflected frame requires an additional sign.
+
+\begin{equation}\label{epsilon-transform}
+(\varepsilon')^{ijkl}=\operatorname{sgn}(\det\Lambda)\,\Lambda^i{}_a\Lambda^j{}_b\Lambda^k{}_c\Lambda^l{}_d\varepsilon^{abcd}.
+\end{equation}
+
+The extra factor $\operatorname{sgn}(\det\Lambda)$ compensates for a change of coordinate orientation. Orientation-preserving Lorentz transformations have determinant $+1$, while orientation-reversing ones contribute an additional minus sign. Restricting attention to orientation-preserving transformations therefore hides the distinction between tensors and pseudotensors.
+
+Such an object is a pseudotensor. This law applies to Lorentz transformations satisfying $\Lambda^{\mathsf T}g\Lambda=g$, hence $|\det\Lambda|=1$. For general linear coordinates, determinant magnitudes and density weights must also be considered; a sign correction alone is insufficient.
+
+\keepheading\subsection{Contractions and determinant expressions}
+
+Contraction pairs an upper index with a lower one and sums over that pair, removing two free indices each time. We now calculate contractions of $\delta$ and $\varepsilon$ and express a product of two epsilon symbols through delta symbols. The simplest example is the identity tensor: its four diagonal entries are one, so its trace is four. Contracting the symmetric metric with two indices of an antisymmetric symbol gives zero, because exchanging the dummy indices reverses the sign but cannot change the sum.
+
+\begin{equation}\label{simple-contract}
+\delta^i{}_i=4,\qquad g_{ij}\varepsilon^{ijkl}=0.
+\end{equation}
+The product of two $\varepsilon$ symbols is a true tensor. It is separately completely antisymmetric in the two index groups, so it can be expressed as a determinant of Kronecker symbols:
+
+\begin{equation}\label{epsilon-determinant}
+\varepsilon^{ijkl}\varepsilon_{abcd}=-\begin{vmatrix}\delta^i{}_a&\delta^i{}_b&\delta^i{}_c&\delta^i{}_d\\\delta^j{}_a&\delta^j{}_b&\delta^j{}_c&\delta^j{}_d\\\delta^k{}_a&\delta^k{}_b&\delta^k{}_c&\delta^k{}_d\\\delta^l{}_a&\delta^l{}_b&\delta^l{}_c&\delta^l{}_d\end{vmatrix}.
+\end{equation}
+For fixed indices, both sides take values $0,\pm1$, and interchanging two rows or columns reverses the sign. The overall minus sign follows from $\varepsilon^{0123}\varepsilon_{0123}=-1$ and the chosen metric signature. Successive contractions give:
+
+\begin{equation}\label{epsilon-one}
+\varepsilon^{ijkl}\varepsilon_{abcl}=-\begin{vmatrix}\delta^i{}_a&\delta^i{}_b&\delta^i{}_c\\\delta^j{}_a&\delta^j{}_b&\delta^j{}_c\\\delta^k{}_a&\delta^k{}_b&\delta^k{}_c\end{vmatrix}.
+\end{equation}
+\begin{equation}\label{epsilon-two}
+\varepsilon^{ijkl}\varepsilon_{abkl}=-2(\delta^i{}_a\delta^j{}_b-\delta^i{}_b\delta^j{}_a).
+\end{equation}
+\begin{equation}\label{epsilon-three}
+\varepsilon^{ijkl}\varepsilon_{ajkl}=-6\delta^i{}_a.
+\end{equation}
+\begin{equation}\label{epsilon-four}
+\varepsilon^{ijkl}\varepsilon_{ijkl}=-24.
+\end{equation}
+
+The factorial coefficients count nonzero permutations. Contracting two indices combines the two possible orders and produces $2!$; contracting three gives $3!$; complete contraction counts $4!=24$ nonzero terms. With one epsilon raised and the other lowered, each fully paired term has the same negative sign, giving $-24$. The Euclidean three-dimensional sign must not be copied into this Minkowski calculation.
+
+\keepheading\subsection{Duality and component calculations}
+
+We now use $\varepsilon$ to define the dual of an antisymmetric tensor. In the preceding product identities, two epsilon symbols provided a compact notation for an alternating sum of products of delta symbols. Here one epsilon symbol is contracted with an antisymmetric tensor, mapping components indexed by one set to those indexed by its complement. The symbol is the same, but the constructed expressions serve different purposes. In four dimensions an antisymmetric rank-two tensor has six independent components, and every index pair has a complementary pair, so its dual is again an antisymmetric rank-two object. For $A^{ij}=-A^{ji}$, define:
+
+\begin{definitionBox}{Dual of an antisymmetric rank-two tensor}
+\begin{equation}\label{dual-two}
+(*A)^{ij}=\frac12\varepsilon^{ijkl}A_{kl}.
+\end{equation}
+\end{definitionBox}
+
+The factor $1/2$ removes double counting of $(k,l)$ and $(l,k)$. Both $A_{kl}$ and $\varepsilon^{ijkl}$ change sign when these indices are swapped, so their product does not. Summing over both orders counts the same independent component twice. Expanding one component makes the coefficient and sign explicit.
+
+For the $01$ component, only the $23$ and $32$ terms contribute:
+
+\begin{equation}\label{dual-example}
+\begin{aligned}(*A)^{01}&=\tfrac12(\varepsilon^{0123}A_{23}+\varepsilon^{0132}A_{32})\\&=\tfrac12(A_{23}-A_{32})=A_{23}.\end{aligned}
+\end{equation}
+Thus all independent components are:
+
+\begin{resultBox}{Dual components of an antisymmetric rank-two tensor}
+\begin{equation}\label{dual-components}
+\begin{gathered}(*A)^{01}=A_{23},\quad (*A)^{02}=A_{31},\quad (*A)^{03}=A_{12},\\(*A)^{12}=A_{03},\quad (*A)^{13}=-A_{02},\quad (*A)^{23}=A_{01}.\end{gathered}
+\end{equation}
+\end{resultBox}
+A four-vector can similarly be dualized into a completely antisymmetric rank-three pseudotensor:
+
+\begin{definitionBox}{Dual of a four-vector}
+\begin{equation}\label{dual-three}
+(*A)^{ijk}=\varepsilon^{ijkl}A_l.
+\end{equation}
+\end{definitionBox}
+
+\begin{resultBox}{Components of the dual of a four-vector}
+\begin{equation}\label{dual-vector}
+\begin{gathered}(*A)^{012}=A_3,\quad (*A)^{013}=-A_2,\\(*A)^{023}=A_1,\quad (*A)^{123}=-A_0.\end{gathered}
+\end{equation}
+\end{resultBox}
+
+A four-vector has four components, and a completely antisymmetric rank-three object likewise has four independent components, labeled by the missing index. No independent information is lost in this correspondence. A dual contains one antisymmetric pseudosymbol, so the dual of an ordinary vector or tensor carries pseudo character, consistent with the pseudoscalar obtained next.
+
+Next contract a rank-two tensor with its dual. Since the expression contains one $\varepsilon$, the result is a pseudoscalar:
+
+\begin{definitionBox}{Contraction of an antisymmetric tensor with its dual}
+\begin{equation}\label{pseudoscalar}
+P=A^{ij}(*A)_{ij}=\frac12\varepsilon_{ijkl}A^{ij}A^{kl}.
+\end{equation}
+\end{definitionBox}
+The nonzero terms fall into three groups of complementary index pairs: $(01,23)$, $(02,13)$ and $(03,12)$. The first group consists of eight terms:
+
+\begin{equation}\label{eight-terms}
+\begin{aligned}S_{01|23}={}&\varepsilon_{0123}A^{01}A^{23}+\varepsilon_{0132}A^{01}A^{32}\\&+\varepsilon_{1023}A^{10}A^{23}+\varepsilon_{1032}A^{10}A^{32}\\&+\varepsilon_{2301}A^{23}A^{01}+\varepsilon_{2310}A^{23}A^{10}\\&+\varepsilon_{3201}A^{32}A^{01}+\varepsilon_{3210}A^{32}A^{10}.\end{aligned}
+\end{equation}
+Antisymmetry of $A$ and $\varepsilon$ makes each of these eight terms equal to $-A^{01}A^{23}$. Treating the other two groups in the same way and including the factor $1/2$ in \eqref{pseudoscalar} gives:
+
+\begin{resultBox}{Pseudoscalar calculation result}
+\begin{equation}\label{pseudoscalar-result}
+P=-4\bigl(A^{01}A^{23}-A^{02}A^{13}+A^{03}A^{12}\bigr).
+\end{equation}
+\end{resultBox}
+
+The three products correspond to the three complementary pairings, and permutation parity determines their relative signs. Eight equal terms in each group, multiplied by the defining factor $1/2$, give the overall coefficient four. Grouping terms this way prevents omissions and explains why a single representative term cannot be used as the full contraction.
+
+\keepheading\section{Polar and axial vectors in Cartesian three-space}
+
+Four-dimensional duality reorganizes antisymmetric components by complementary indices. To connect this operation with familiar spatial geometry, consider Euclidean three-space. In orthonormal Cartesian coordinates its metric is the identity, so covariant and contravariant components are numerically equal and spatial indices can all be written below. This convenience does not extend to four-dimensional Minkowski indices.
+
+\begin{equation}\label{euclidean}
+g_{\alpha\beta}=\delta_{\alpha\beta},\qquad(g_{\alpha\beta})=\operatorname{diag}(1,1,1),\qquad\epsilon_{123}=1.
+\end{equation}
+The three-dimensional $\epsilon_{\alpha\beta\gamma}$ is likewise completely antisymmetric. Under orthogonal coordinate changes, $\delta$ is a true tensor, whereas $\epsilon$ with fixed numerical components is a pseudotensor, by the same test as above. Duality in three dimensions pairs ranks zero and three, and ranks one and two:
+
+\begin{equation}\label{dual-three-space}
+(*A)_{\alpha\beta}=\epsilon_{\alpha\beta\gamma}A_\gamma,\qquad *\Omega=\frac1{3!}\epsilon_{\alpha\beta\gamma}\Omega_{\alpha\beta\gamma}.
+\end{equation}
+
+A three-vector has three independent components, as does an antisymmetric rank-two tensor, whose independent entries can be chosen as $A_{23},A_{31},A_{12}$. A completely antisymmetric rank-three tensor has only one independent entry and can be represented by a scalar or pseudoscalar. The resulting tensor or pseudo character depends on that of the original object, but the orientation factor contributed by one $\epsilon$ must always be retained.
+
+We focus on vectors and antisymmetric rank-two tensors. Under $R\in O(3)$, a polar vector $\boldsymbol p$ and an axial vector $\boldsymbol a$ obey:
+
+\begin{equation}\label{polar-axial}
+\boldsymbol p'=R\boldsymbol p,\qquad\boldsymbol a'=(\det R)R\boldsymbol a.
+\end{equation}
+
+For $\det R=+1$, both kinds transform identically, so ordinary spatial rotations cannot distinguish them. Only orientation-reversing transformations reveal the additional determinant sign of an axial vector. Having three components is therefore insufficient to identify the type; its origin and full transformation law matter.
+
+In particular, under full spatial inversion $R=-I$, a polar vector changes sign and an axial vector does not. This invariance refers to full inversion; a general mirror reflection need not preserve every axial-vector component. The cross product of two polar vectors is axial and is the dual of an antisymmetric rank-two tensor:
+
+\begin{equation}\label{cross}
+\begin{gathered}\boldsymbol C=\boldsymbol A\times\boldsymbol B,\qquad C_{\beta\gamma}=A_\beta B_\gamma-A_\gamma B_\beta,\\C_\alpha=\frac12\epsilon_{\alpha\beta\gamma}C_{\beta\gamma}.\end{gathered}
+\end{equation}
+
+Antisymmetrizing first and then dualizing with $\epsilon$ reproduces the cross product. This construction explains its axial character rather than merely prescribing a determinant mnemonic. Applying the same construction to the purely spatial components of a four-dimensional tensor organizes them into a three-dimensional axial vector.
+
+This three-dimensional duality represents an antisymmetric four-dimensional rank-two tensor by a pair $(\boldsymbol p,\boldsymbol a)$:
+
+\begin{equation}\label{antisymmetric-matrix}
+(A^{ij})=\begin{pmatrix}0&p_x&p_y&p_z\\-p_x&0&-a_z&a_y\\-p_y&a_z&0&-a_x\\-p_z&-a_y&a_x&0\end{pmatrix}.
+\end{equation}
+\begin{equation}\label{matrix-components}
+p_\alpha=A^{0\alpha},\qquad A^{\alpha\beta}=-\epsilon_{\alpha\beta\gamma}a_\gamma,\qquad a_\gamma=-\frac12\epsilon_{\gamma\alpha\beta}A^{\alpha\beta}.
+\end{equation}
+
+The six independent entries split into the three time--space entries $A^{01},A^{02},A^{03}$ and the spatial entries $A^{23},A^{31},A^{12}$. Thus $(\boldsymbol p,\boldsymbol a)$ reorganizes one antisymmetric tensor; it does not describe two unrelated four-vectors. The organization depends on the chosen split between time and space.
+
+Under purely spatial orthogonal transformations, $\boldsymbol p$ is polar and $\boldsymbol a$ axial; Lorentz boosts generally mix them. Lowering both four-dimensional indices changes the sign only of the time--space entries, giving the shorthand $A_{ij}=(-\boldsymbol p,\boldsymbol a)$ in this matrix convention.
+
+\keepheading\section{Elements of tensor calculus}
+
+\keepheading\subsection{Differentials of scalar functions}
+
+The preceding algebra concerned tensor components at a point. When those components vary through spacetime, differentiation and integration are needed. A smooth scalar function $\varphi$ is the simplest starting point. Its partial derivatives depend on coordinates, but its total change $d\varphi$ along a given infinitesimal displacement is invariant. The differential therefore contracts covariant components with a contravariant displacement:
+
+\begin{equation}\label{differential}
+\begin{gathered}d\varphi=\partial_i\varphi\,dx^i,\qquad\partial_i\varphi=\frac{\partial\varphi}{\partial x^i},\\(\partial_i\varphi)=\left(\frac1c\frac{\partial\varphi}{\partial t},\boldsymbol\nabla\varphi\right),\qquad(dx^i)=(c\,dt,dx,dy,dz).\end{gathered}
+\end{equation}
+
+The chain rule also explains the index positions: coordinate displacements transform with $\Lambda$, whereas the derivative coefficients transform with its inverse, so their contraction cancels the coordinate change. The factor $1/c$ in the time derivative comes from $x^0=ct$. The spatial entries are the ordinary three-dimensional gradient, giving all four derivative components the same dimension.
+
+Thus $\partial_i\varphi$ has covariant components. If the gradient is defined as the metric-dual vector of the differential, its contravariant components are given below; index placement distinguishes the two conventions.
+
+\begin{equation}\label{raised-gradient}
+(\partial^i\varphi)=g^{ij}\partial_j\varphi=\left(\frac1c\frac{\partial\varphi}{\partial t},-\boldsymbol\nabla\varphi\right).
+\end{equation}
+\keepheading\subsection{Four types of integration elements}
+
+The displacement $dx^i$ appearing in differentials is also the integration element along a curve. For a two-dimensional surface, a three-dimensional hypersurface or a four-dimensional region, the integration element must instead be built from more independent tangent elements. Integrals in spacetime thus have four natural types. Below, $dx_{(1)}^i,dx_{(2)}^i,dx_{(3)}^i$ label distinct tangent elements; the parenthesized numerals are labels, not summation indices.
+
+An oriented two-dimensional surface element is generated by two tangent elements and is an antisymmetric rank-two tensor:
+
+\begin{equation}\label{area}
+df^{ij}=dx_{(1)}^i dx_{(2)}^j-dx_{(1)}^j dx_{(2)}^i.
+\end{equation}
+
+Exchanging the two tangent elements reverses the orientation of their small parallelogram, which explains antisymmetry. The entry $df^{ij}$ records its oriented projection onto the coordinate plane $x^ix^j$. The area element therefore retains both size and orientation.
+
+The integration element of a three-dimensional hypersurface is generated by three tangent elements and is completely antisymmetric in its three indices:
+
+\begin{equation}\label{hypersurface}
+dS^{ijk}=\begin{vmatrix}dx_{(1)}^i&dx_{(2)}^i&dx_{(3)}^i\\dx_{(1)}^j&dx_{(2)}^j&dx_{(3)}^j\\dx_{(1)}^k&dx_{(2)}^k&dx_{(3)}^k\end{vmatrix}.
+\end{equation}
+
+A hypersurface here is a three-dimensional integration domain inside four-dimensional spacetime, not a four-dimensional volume. The determinant changes sign when tangent elements are exchanged and vanishes if they are linearly dependent. Its three free indices identify projections onto three-dimensional coordinate hyperplanes.
+
+Integration over a four-dimensional region uses the volume element:
+
+\begin{equation}\label{volume}
+d\Omega=dx^0dx^1dx^2dx^3=c\,dt\,dx\,dy\,dz=c\,dt\,dV.
+\end{equation}
+Here $d\Omega$ is the volume element of a small four-dimensional region: $c\,dt$ is its time-direction length and $dV=dx\,dy\,dz$ its spatial volume element. When only volume size matters, take the absolute value of the product. Lorentz transformations satisfy $|\det\Lambda|=1$, so the four-dimensional volume size of the same small region is unchanged. If the ordering of coordinate axes is also recorded, exchanging two axes reverses the sign of the oriented volume element. Under a Lorentz transformation preserving that orientation, $d\Omega$ itself is unchanged.
+
+\keepheading\subsection{Dual surface and hypersurface elements}
+
+Antisymmetric area components record the orientation of a small surface patch. A dual representation can make their meaning more intuitive, but its rank depends on the dimension of the space. In three dimensions, the complement of an index pair has one index, so a surface element is dual to a vector. In four dimensions the complement still has two indices, so the dual remains an antisymmetric rank-two tensor:
+
+\begin{equation}\label{dual-area}
+df^{*ij}=\frac12\varepsilon^{ijkl}df_{kl}.
+\end{equation}
+For a nondegenerate tangent plane, the dual describes its orthogonal two-plane rather than a single normal vector. A decomposable area element satisfies $df^{*ij}df_{ij}=0$. For null planes, the orthogonal complement can intersect the original plane, requiring separate care.
+
+A rank-three hypersurface element can instead be dualized into an element with the form of a four-dimensional normal vector. With the conventions used here:
+
+\begin{equation}\label{dual-hypersurface}
+dS^i=-\frac1{3!}\varepsilon^{ijkl}dS_{jkl},\qquad dS_{jkl}=\varepsilon_{ijkl}dS^i.
+\end{equation}
+
+A completely antisymmetric hypersurface element in four dimensions has four independent entries and can be represented by an object with four components. Calling $dS^i$ vector-like refers to its transformation law and normal direction, not to a curve as its integration domain. The factor $1/3!$ again removes permutation overcounting, while the overall sign follows from the epsilon and metric conventions.
+
+For example, $dS^0=dS^{123}$ and $dS^1=dS^{023}$. On a hyperplane of constant $x^0$, $dS^0=dx\,dy\,dz$. For a nondegenerate hypersurface it has a normal interpretation, but it remains a three-dimensional integration element, not a tangent line element.
+
+\keepheading\subsection{Component formulas for four-dimensional integrals}
+
+With line, surface and hypersurface elements defined, boundary integrals can be related to integrals over their interiors. We treat closed hypersurfaces, closed two-dimensional surfaces and closed curves in that order, using the component formulas of the reference\cite{landau-fields}. Orientations must be consistent and fields sufficiently smooth on the domains and boundaries. An element-substitution arrow instructs us to replace the element and insert the derivative operator inside the integral; it is not a pointwise equality of local elements. Any additional free indices are retained, and the relation applies componentwise.
+
+\keepheading\textbf{A closed hypersurface and a four-dimensional region.} Let $\mathcal V$ be a four-dimensional region with closed boundary hypersurface $\partial\mathcal V$. Replacing $dS_i$ by $d\Omega\,\partial_i$ gives the four-dimensional Gauss formula:
+\begin{equation}\label{gauss-four}
+\begin{gathered}
+dS_i\ \longrightarrow\ d\Omega\,\frac{\partial}{\partial x^i},\\
+\oint_{\partial\mathcal V} A^i\,dS_i
+=\int_{\mathcal V}\frac{\partial A^i}{\partial x^i}\,d\Omega.
+\end{gathered}
+\end{equation}
+
+The left side sums the normal component over the closed boundary, while the right side sums the divergence in the interior. It has the same flux--source structure as the three-dimensional Gauss formula. Four dimensions change the domain and index ranges, not the relation between boundary flux and interior divergence.
+
+\keepheading\textbf{A closed two-dimensional surface and a hypersurface.} Let $\mathcal H$ be a three-dimensional hypersurface with closed two-dimensional boundary $\partial\mathcal H$. For an antisymmetric rank-two tensor $A^{ik}=-A^{ki}$, the element substitution and integral relation are:
+\begin{equation}\label{surface-hypersurface}
+\begin{gathered}
+df^*_{ik}\ \longrightarrow\ dS_i\frac{\partial}{\partial x^k}-dS_k\frac{\partial}{\partial x^i},\\
+\begin{aligned}
+\frac12\oint_{\partial\mathcal H}A^{ik}\,df^*_{ik}
+&=\frac12\int_{\mathcal H}\left(dS_i\frac{\partial A^{ik}}{\partial x^k}-dS_k\frac{\partial A^{ik}}{\partial x^i}\right)\\
+&=\int_{\mathcal H}dS_i\frac{\partial A^{ik}}{\partial x^k}.
+\end{aligned}
+\end{gathered}
+\end{equation}
+
+The factor $1/2$ prevents double counting of the antisymmetric pairs $(i,k)$ and $(k,i)$. Using the dual area element $df^*_{ik}$ on the two-dimensional boundary matches the hypersurface element $dS_i$ in the interior. Once orientations are chosen, both sides must follow them; one side\textquotesingle s element sign cannot be changed independently.
+
+In the last step, antisymmetry of $A^{ik}$ and relabeling the dummy indices make the two terms equal, canceling the factor $1/2$.
+
+\keepheading\textbf{A closed curve and a two-dimensional surface.} Let $\Sigma$ be a two-dimensional surface with closed boundary curve $\partial\Sigma$. For a covariant vector $A_i$, replacing $dx^i$ by $df^{ki}\partial_k$ gives the four-dimensional form of Stokes\textquotesingle formula:
+\begin{equation}\label{stokes-components}
+\begin{gathered}
+dx^i\ \longrightarrow\ df^{ki}\frac{\partial}{\partial x^k},\\
+\begin{aligned}
+\oint_{\partial\Sigma}A_i\,dx^i
+&=\int_\Sigma df^{ki}\frac{\partial A_i}{\partial x^k}\\
+&=-\frac12\int_\Sigma df^{ki}\left(\frac{\partial A_k}{\partial x^i}-\frac{\partial A_i}{\partial x^k}\right).
+\end{aligned}
+\end{gathered}
+\end{equation}
+
+The left side is circulation around a closed boundary. The right side shows that circulation is determined by the antisymmetric derivative over the spanning surface. Exchanging $i,k$ reverses the area element, so the symmetric derivative part cancels. This also explains how the factor $1/2$ and the final minus sign follow from the chosen index order.
+
+Since $df^{ki}=-df^{ik}$, only the antisymmetric part of $\partial_k A_i$ contributes. These three relations use the surface and hypersurface elements already defined and are expressed directly through index contractions.
+
+\clubpenalty=10000\widowpenalty=10000\keepheading\section{Relativistic kinematics}
+Tensor calculus applies directly to particle motion. The events experienced by a particle form its worldline. To obtain a tangent that transforms as a four-vector, differentiate with respect to a parameter shared by all inertial frames rather than one frame\textquotesingle s coordinate time. For a smooth future-directed timelike worldline with $v=|\boldsymbol v|<c$, proper time $\tau$, or the interval parameter $s=c\tau$, provides such a parameter and leads to four-velocity and four-acceleration\cite{landau-fields}. Retain signature $(+---)$, $x^i=(ct,\boldsymbol x)$ and $ds=c\,d\tau>0$.
+
+First define the four-velocity as the derivative of the four-dimensional coordinates with respect to the interval. Using $ds=c\sqrt{1-v^2/c^2}\,dt$ gives:
+
+\begin{definitionBox}{Definition of four-velocity}
+\begin{equation}\label{four-velocity}
+\begin{aligned}u^i=\frac{dx^i}{ds}&=\frac{1}{c\sqrt{1-v^2/c^2}}\left(\frac{d(ct)}{dt},\frac{d\boldsymbol x}{dt}\right)\\&=\frac{1}{c\sqrt{1-v^2/c^2}}(c,\boldsymbol v)\\&=\gamma\left(1,\frac{\boldsymbol v}{c}\right),\qquad\gamma=\frac1{\sqrt{1-v^2/c^2}}.\end{aligned}
+\end{equation}
+\end{definitionBox}
+
+The four-velocity is tangent to the worldline, but its spatial part is $\gamma\boldsymbol v/c$, not the ordinary three-velocity. The difference comes from the differentiation parameter: coordinate time and proper time differ by the factor $\gamma$. The time component $u^0=\gamma$ and spatial components together form the object that transforms by the Lorentz law.
+
+We use the dimensionless convention $u^i=dx^i/ds$ used by Landau. The proper-time convention $U^i=dx^i/d\tau$ instead gives $U^i=c\,u^i$; the two conventions must be distinguished.
+
+Next introduce rapidity. Write $\boldsymbol v=v\widehat{\boldsymbol n}$ with $\widehat{\boldsymbol n}\cdot\widehat{\boldsymbol n}=1$. The rapidity definition gives:
+
+\begin{equation}\label{rapidity-identities}
+\begin{gathered}\tanh\eta=\frac vc,\qquad\cosh\eta=\frac1{\sqrt{1-v^2/c^2}}=\gamma,\\\sinh\eta=\frac vc\cosh\eta,\qquad v\cosh\eta=c\sinh\eta.\end{gathered}
+\end{equation}
+\begin{equation}\label{velocity-rapidity}
+u^i=\frac{\cosh\eta}{c}(c,v\widehat{\boldsymbol n})=(\cosh\eta,\sinh\eta\,\widehat{\boldsymbol n}).
+\end{equation}
+At an instant of rest, $v=0$, the velocity direction need not be unique, but $u^i=(1,\boldsymbol 0)$ is well-defined. The hyperbolic identity shows that the four-velocity is a unit timelike vector in the Minkowski metric:
+
+\begin{equation}\label{velocity-unit-rapidity}
+u^iu_i=\cosh^2\eta-\sinh^2\eta\,(\widehat{\boldsymbol n}\cdot\widehat{\boldsymbol n})=1.
+\end{equation}
+The same conclusion follows directly from the interval, without using rapidity:
+
+\begin{resultBox}{Four-velocity normalization}
+\begin{equation}\label{velocity-unit-interval}
+dx^i dx_i=ds^2\quad\Longrightarrow\quad u^iu_i=\frac{dx^i}{ds}\frac{dx_i}{ds}=1.
+\end{equation}
+\end{resultBox}
+
+Both calculations prove that the four-velocity satisfies $u^iu_i=1$. The rapidity calculation substitutes $u^i=(\cosh\eta,\sinh\eta\,\widehat{\boldsymbol n})$ into the Minkowski inner product and uses the hyperbolic identity. The interval calculation substitutes the definition $u^i=dx^i/ds$ into the same inner product and uses $dx^idx_i=ds^2$.
+
+Next differentiate the four-velocity with respect to the interval to define the four-acceleration $w^i$. The following rapidity component expression assumes rectilinear motion with fixed $\widehat{\boldsymbol n}$. Under this assumption, set $\kappa=d\eta/ds=(1/c)\,d\eta/d\tau$.
+
+\begin{definitionBox}{Four-acceleration (fixed spatial direction)}
+\begin{equation}\label{four-acceleration}
+\begin{aligned}w^i=\frac{d^2x^i}{ds^2}=\frac{du^i}{ds}&=\frac1c\frac{d\eta}{d\tau}(\sinh\eta,\cosh\eta\,\widehat{\boldsymbol n})\\&=\kappa(\sinh\eta,\cosh\eta\,\widehat{\boldsymbol n}).\end{aligned}
+\end{equation}
+\end{definitionBox}
+The dimension of $\kappa$ is inverse length. The symbol $\kappa$ denotes the rate of change of rapidity with respect to the interval and differs from ordinary three-dimensional acceleration. If the direction changes, differentiating \eqref{velocity-rapidity} also produces a direction-derivative term, so the fixed-direction component expression no longer applies.
+
+\keepheading Finally verify orthogonality. Since the four-velocity has constant unit norm and the metric is constant in these inertial coordinates:
+
+\begin{resultBox}{Orthogonality of velocity and acceleration}
+\begin{equation}\label{velocity-acceleration-orthogonal}
+\frac{d}{ds}(u^iu_i)=2w^iu_i=0\quad\Longrightarrow\quad w^iu_i=0.
+\end{equation}
+\end{resultBox}
+
+This differentiation uses the four-velocity normalization identity $u^iu_i=1$ and the constant metric in the current inertial coordinates. Differentiating the two factors in $u^iu_i$ gives terms that combine by metric symmetry, producing the factor two. The equation $u_iw^i=0$ explicitly states that the Minkowski inner product of the four-velocity $u^i$ and four-acceleration $w^i$ vanishes. Four-acceleration describes the change of four-velocity along the worldline. That change must preserve $u^iu_i=1$, so it has no component along the four-velocity itself.
+
+\keepheading This conclusion holds for general smooth timelike motion and requires no fixed-direction assumption. For the rectilinear case above it can also be checked directly in rapidity form:
+
+\begin{equation}\label{orthogonality-rapidity}
+\begin{aligned}w^iu_i&=\kappa\bigl[\sinh\eta\cosh\eta-\cosh\eta\sinh\eta\,(\widehat{\boldsymbol n}\cdot\widehat{\boldsymbol n})\bigr]\\&=0.\end{aligned}
+\end{equation}
+\begin{resultBox}{Kinematic summary: displacement, velocity and acceleration}
+For the smooth timelike worldline of a massive particle, nonzero tangent displacements, four-velocity and four-acceleration satisfy:
+\begin{itemize}
+\setlength{\itemsep}{2pt}\setlength{\parsep}{0pt}
+\item The tangent displacement $dx^i$ is timelike: $dx^idx_i=ds^2>0$.
+\item The four-velocity $u^i$ is timelike: $u^iu_i=1>0$.
+\item Nonzero four-acceleration $w^i$ is spacelike: $w^iw_i<0$. Without acceleration, $w^i=0$.
+\end{itemize}
+\end{resultBox}
+\par\medskip\noindent\begin{minipage}{\linewidth}
+\begin{thebibliography}{9}
+\bibitem{landau-fields} L. D. Landau, E. M. Lifshitz. {\fontspec{SimSun}《场论》} (Chang lun), 8th ed., Course of Theoretical Physics, Vol. 2. Translated by Lu Xin, Ren Lang and Yuan Bingnan. Beijing: Higher Education Press, 2012. ISBN 978-7-04-035173-6. Chapter 1, Sections 6--7; supplied pages 16--25.
+\end{thebibliography}
+\par\medskip{\small For feedback, identify the version, section and equation number. This draft is unpublished and has no configured feedback endpoint. Original editorial content is licensed under CC BY 4.0; cited material retains its original rights. No public author name is specified yet. Reuse should retain the title, version and license link and indicate changes.\par\texttt{\licenseurl}}
+\end{minipage}
+\end{document}

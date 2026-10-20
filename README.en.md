@@ -18,12 +18,12 @@ The [200_github_open_learning_pdf skill](skills/200_github_open_learning_pdf/SKI
 
 ## Contents
 
-The repository is being initialized and does not yet contain study documents. The table below will be updated with file links as materials are added.
+The first trilingual study document is available, with PDFs, LaTeX sources, public manuscript images and Word source copies.
 
 | Category | Content | Status |
 | --- | --- | --- |
 | Mathematics | Concepts, proofs, and derivations | To be added |
-| Physics | Theoretical explanations, calculations, and derivations | To be added |
+| Physics | [Landau: tensors and relativistic kinematics](notes/physics/landau-tensors/README.en.md) | v0.7 · ZH / EN / JA |
 
 Use the suffixes `_zh`, `_en`, and `_ja` to distinguish language editions, providing both `.pdf` and `.tex` files. Include any necessary external bibliography files or images that may be redistributed. Follow the instructions in each source document for the compilation engine, fonts, dependencies, and build steps.
 

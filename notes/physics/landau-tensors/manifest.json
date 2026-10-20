@@ -1,0 +1,115 @@
+{
+  "version": "0.7",
+  "files": [
+    {
+      "path": "manuscript/page-001.jpg",
+      "bytes": 230146,
+      "sha256": "02b804c89823fa40e76040db53fb84829dcebe2bb88e0535a4bfb3e3438f4da3"
+    },
+    {
+      "path": "manuscript/page-002.jpg",
+      "bytes": 243688,
+      "sha256": "490c932adbf2c6fd65224f2179740d406845d3965b0681b075d215c384877349"
+    },
+    {
+      "path": "manuscript/page-003.jpg",
+      "bytes": 238906,
+      "sha256": "82f59329f931a9aaf110b3adec406aa4add8d6b804ee2c5ebcd872316a8143b7"
+    },
+    {
+      "path": "manuscript/page-004.jpg",
+      "bytes": 275884,
+      "sha256": "586d152a810c5935b3f845064959e3c7da4f9b403b0411be1eb27cc426c27d2c"
+    },
+    {
+      "path": "manuscript/page-005.jpg",
+      "bytes": 237404,
+      "sha256": "c8d4e3ef586af628ae3f535848939e937f8c838089f037340763e23ff0a823ab"
+    },
+    {
+      "path": "manuscript/page-006.jpg",
+      "bytes": 125415,
+      "sha256": "e704864c3c90c955cd2b27973665177bce703798840a9dc118138fe14402b215"
+    },
+    {
+      "path": "manuscript/page-007.jpg",
+      "bytes": 135977,
+      "sha256": "289cf7403c82691b07afb66630e5f4a5bdc7e7bfbbddf8e4f7efd383f9ec03c0"
+    },
+    {
+      "path": "manuscript/page-008.jpg",
+      "bytes": 223778,
+      "sha256": "0f64e31e2b0abb5b642a7e1bb65549f99778c0a27701162ac3ca3dfe298d1c2c"
+    },
+    {
+      "path": "manuscript/page-009.jpg",
+      "bytes": 161463,
+      "sha256": "f98fbf7982dae6772d2c40f9be45e514da3bbfce2f684d4f29b2177ae8868fe7"
+    },
+    {
+      "path": "manuscript/page-010.jpg",
+      "bytes": 189573,
+      "sha256": "94a548eef5226fe8ebd9cdbd46ccaf167107d1881bba04e8268f9ec8e43da970"
+    },
+    {
+      "path": "manuscript/README.md",
+      "bytes": 873,
+      "sha256": "9826fdd26e6549d76ad7b8aa346903c4ec0c3510fece491a45fa6256ca69c9d8"
+    },
+    {
+      "path": "pdf/landau_tensors_en.pdf",
+      "bytes": 114620,
+      "sha256": "98d88bdfd9d2af93fb126102389d832c6bdc20febcd8cbb2841960b6324569e4"
+    },
+    {
+      "path": "pdf/landau_tensors_ja.pdf",
+      "bytes": 358877,
+      "sha256": "a8f42c2125958023ceda420d9ced90a35c32c51223c3d1c9884b1536e65cf45b"
+    },
+    {
+      "path": "pdf/landau_tensors_zh.pdf",
+      "bytes": 226520,
+      "sha256": "f0ab0c670a56ed6d08b6751ad34055be7ad5b54118dabcce98471dfcc7eebc7b"
+    },
+    {
+      "path": "README.en.md",
+      "bytes": 2483,
+      "sha256": "fbb6e5ecfbf9d0f2379ecd950afb7658294a12ae8dfb33190b395adbb213677a"
+    },
+    {
+      "path": "README.ja.md",
+      "bytes": 2753,
+      "sha256": "aeb81b04c37d33006d66670b3eb5a33ee78c9ec718ba9f990959d187eeca0367"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2248,
+      "sha256": "5621a2725fdd18f4b72475092a5bce8ee61c2b870f7a8e909b412f4924a0ab4a"
+    },
+    {
+      "path": "sources/2026_10_18_朗道场论_文字描述.docx",
+      "bytes": 13459,
+      "sha256": "b7dcb4271b93e7f3301090326da3790357712c21f388078ed4fc89a222baef88"
+    },
+    {
+      "path": "sources/2026_10_19_朗道场论_文字描述.docx",
+      "bytes": 12242,
+      "sha256": "8e42df291fefa76e87bf60048aacef97286432836d59aeecf9f2ca8255248e98"
+    },
+    {
+      "path": "tex/landau_tensors_en.tex",
+      "bytes": 43529,
+      "sha256": "a0eccccb96935c6d56c1b87d2cb21c15e839a61a2dbaee31514a684353aba87c"
+    },
+    {
+      "path": "tex/landau_tensors_ja.tex",
+      "bytes": 44532,
+      "sha256": "157e0c67fe68b2c2f33164045174c92c18c76cba1610b0a027094deff2c5d584"
+    },
+    {
+      "path": "tex/landau_tensors_zh.tex",
+      "bytes": 39791,
+      "sha256": "547dcb3f71782de93ffd69529ef3a70b41de244fc19d1c3bd000e8f73124546e"
+    }
+  ]
+}
